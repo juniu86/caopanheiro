@@ -1,0 +1,65 @@
+:root {
+  /* Colors */
+  --color-primary: #FF8C42;
+  --color-primary-dark: #E67A30;
+  --color-secondary: #4ECDC4;
+  --color-secondary-dark: #3DBDB4;
+  --color-accent: #FFE66D;
+  --color-danger: #FF6B6B;
+  --color-success: #51CF66;
+  --color-warning: #FFA94D;
+  --color-info: #74C0FC;
+
+  /* Backgrounds */
+  --bg-main: #FFF8F0;
+  --bg-card: #FFFFFF;
+  --bg-dark: #2D3436;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Text */
+  --text-primary: #2D3436;
+  --text-secondary: #636E72;
+  --text-light: #B2BEC3;
+  --text-white: #FFFFFF;
+
+  /* Stat bar colors */
+  --stat-hunger: #FF6B6B;
+  --stat-happiness: #FFE66D;
+  --stat-energy: #74C0FC;
+  --stat-hygiene: #51CF66;
+  --stat-health: #FF8C42;
+  --stat-learning: #A29BFE;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-round: 50%;
+
+  /* Font */
+  --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-size-sm: 0.85rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+  --font-size-title: 3rem;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}

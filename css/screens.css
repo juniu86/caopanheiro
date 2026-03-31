@@ -1,0 +1,355 @@
+/* Title Screen */
+.title-screen {
+  background: linear-gradient(135deg, #FF8C42 0%, #FFE66D 100%);
+  text-align: center;
+}
+
+.title-screen__logo {
+  font-size: var(--font-size-title);
+  font-weight: 900;
+  color: var(--text-white);
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
+  line-height: 1.1;
+}
+
+.title-screen__subtitle {
+  font-size: var(--font-size-lg);
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: var(--space-sm);
+}
+
+.title-screen__dog {
+  font-size: 6rem;
+  margin: var(--space-lg) 0;
+  animation: wag-tail 0.6s ease-in-out infinite alternate;
+}
+
+.title-screen__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.title-screen .btn {
+  min-width: 200px;
+  background: var(--text-white);
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* Name Input Screen */
+.name-screen {
+  background: var(--bg-main);
+}
+
+.name-screen__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.name-screen__subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
+}
+
+/* Shelter Screen */
+.shelter-screen {
+  background: var(--bg-main);
+}
+
+.shelter-screen__header {
+  text-align: center;
+  padding: var(--space-md);
+}
+
+.shelter-screen__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.shelter-screen__subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.shelter-screen .tabs {
+  margin: 0 var(--space-md);
+}
+
+.shelter-screen .breed-grid {
+  padding: var(--space-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Breed Detail Modal */
+.breed-detail {
+  text-align: center;
+  max-width: 320px;
+}
+
+.breed-detail__sprite {
+  font-size: 5rem;
+  margin: var(--space-md) 0;
+}
+
+.breed-detail__name {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.breed-detail__personality {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: var(--space-xs) 0;
+}
+
+.breed-detail__difficulty {
+  display: inline-block;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  margin: var(--space-sm) 0;
+}
+
+.breed-detail__difficulty--easy { background: #D4EDDA; color: #155724; }
+.breed-detail__difficulty--medium { background: #FFF3CD; color: #856404; }
+.breed-detail__difficulty--hard { background: #F8D7DA; color: #721C24; }
+.breed-detail__difficulty--expert { background: #F5C6CB; color: #491217; }
+
+.breed-detail__stats {
+  text-align: left;
+  margin: var(--space-md) 0;
+}
+
+.breed-detail__trick {
+  margin: var(--space-md) 0;
+  padding: var(--space-sm);
+  background: #F8F9FA;
+  border-radius: var(--radius-sm);
+}
+
+.breed-detail__trick-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.breed-detail__trick-name {
+  font-weight: 700;
+}
+
+.breed-detail__buttons {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.breed-detail__buttons .btn {
+  flex: 1;
+}
+
+/* Name Dog Screen */
+.name-dog-screen {
+  background: var(--bg-main);
+}
+
+.name-dog-screen__breed {
+  font-size: 5rem;
+}
+
+.name-dog-screen__breed-name {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Home Screen */
+.home-screen {
+  background: var(--bg-main);
+}
+
+.home-screen__room {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+/* Room backgrounds */
+.room--apt-small {
+  background: linear-gradient(180deg, #FFF8E1 0%, #FFE0B2 100%);
+}
+
+.room--apt-large {
+  background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.room--house-small {
+  background: linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 100%);
+}
+
+.room--house-large {
+  background: linear-gradient(180deg, #F3E5F5 0%, #E1BEE7 100%);
+}
+
+/* Room furniture */
+.room__floor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, #D7CCC8 0%, #BCAAA4 100%);
+  border-top: 3px solid #A1887F;
+}
+
+.room__bowl {
+  position: absolute;
+  bottom: 8%;
+  right: 15%;
+  font-size: 1.8rem;
+}
+
+.room__bed {
+  position: absolute;
+  bottom: 5%;
+  left: 10%;
+  font-size: 2rem;
+}
+
+/* Stat panel on home screen */
+.stats-panel {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-card);
+  border-top: 1px solid #EEE;
+}
+
+.stats-panel__dog-name {
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.stats-panel__mood {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* Shop Screen */
+.shop-screen {
+  background: var(--bg-main);
+}
+
+.shop-screen__header {
+  text-align: center;
+  padding: var(--space-md);
+}
+
+.shop-screen__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.shop-screen .tabs {
+  margin: 0 var(--space-md);
+}
+
+.shop-screen__items {
+  padding: var(--space-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Achievements Screen */
+.achievements-screen {
+  background: var(--bg-main);
+}
+
+.achievements-screen__header {
+  text-align: center;
+  padding: var(--space-md);
+}
+
+.achievements-screen__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.achievements-screen__list {
+  padding: var(--space-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Housing Screen */
+.housing-screen {
+  background: var(--bg-main);
+}
+
+.housing-screen__current {
+  text-align: center;
+  padding: var(--space-lg);
+}
+
+.housing-screen__icon {
+  font-size: 4rem;
+}
+
+.housing-screen__name {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin: var(--space-sm) 0;
+}
+
+.housing-screen__capacity {
+  color: var(--text-secondary);
+}
+
+.housing-screen__next {
+  text-align: center;
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  margin: var(--space-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Away summary screen */
+.away-screen {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: var(--text-white);
+}
+
+.away-screen__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.away-screen__time {
+  font-size: var(--font-size-md);
+  opacity: 0.9;
+}
+
+.away-screen__events {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  width: 100%;
+  max-width: 300px;
+}
+
+.away-screen__event {
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.away-screen__event:last-child {
+  border-bottom: none;
+}

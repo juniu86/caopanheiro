@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu C&atilde;opanheiro</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/screens.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/dog-sprites.css">
+</head>
+<body>
+  <div id="game-container">
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="modal-overlay">
+      <div id="modal-content" class="modal"></div>
+    </div>
+
+    <!-- ===== SCREEN: TITLE ===== -->
+    <div id="screen-title" class="screen title-screen">
+      <div class="center-content">
+        <div>
+          <div class="title-screen__dog">&#x1F436;</div>
+          <div class="title-screen__logo">Meu<br>C&atilde;opanheiro</div>
+          <div class="title-screen__subtitle">Adote, cuide e ame!</div>
+        </div>
+        <div class="title-screen__buttons">
+          <button id="new-game-btn" class="btn btn--large">Novo Jogo</button>
+          <button id="continue-btn" class="btn btn--large" style="display:none;">Continuar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: PLAYER NAME ===== -->
+    <div id="screen-name" class="screen name-screen">
+      <div class="center-content">
+        <div style="font-size:4rem;">&#x1F43E;</div>
+        <div class="name-screen__title">Quem est&aacute; adotando hoje?</div>
+        <div class="name-screen__subtitle">Digite seu nome</div>
+        <input type="text" id="player-name-input" class="input-field" placeholder="Seu nome..." maxlength="20" autocomplete="off">
+        <button id="confirm-name-btn" class="btn btn--primary btn--large">Confirmar</button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: SHELTER ===== -->
+    <div id="screen-shelter" class="screen shelter-screen">
+      <div class="shelter-screen__header">
+        <div class="shelter-screen__title">&#x1F3E0; Abrigo</div>
+        <div class="shelter-screen__subtitle">Escolha seu novo c&atilde;opanheiro!</div>
+      </div>
+      <div id="shelter-tabs" class="tabs"></div>
+      <div id="shelter-grid" class="breed-grid" style="padding:16px;overflow-y:auto;flex:1;"></div>
+      <!-- Back to home (only shown if player has dogs) -->
+      <div class="nav-buttons">
+        <button class="nav-btn" data-nav="home">
+          <span class="nav-btn__icon">&#x1F3E0;</span>
+          <span>Casa</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: NAME DOG ===== -->
+    <div id="screen-name-dog" class="screen name-dog-screen">
+      <div class="center-content">
+        <div id="name-dog-breed-preview"></div>
+        <div id="name-dog-breed-name" class="name-dog-screen__breed-name"></div>
+        <div style="font-size:var(--font-size-xl);font-weight:700;">D&ecirc; um nome!</div>
+        <input type="text" id="dog-name-input" class="input-field" placeholder="Nome do cachorro..." maxlength="20" autocomplete="off">
+        <button id="confirm-dog-name-btn" class="btn btn--primary btn--large">Adotar!</button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: HOME ===== -->
+    <div id="screen-home" class="screen home-screen">
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <div class="top-bar__coins">&#x1F43E; <span id="top-coins">0</span></div>
+        <div>
+          <span id="top-day" class="top-bar__clock">Dia 1</span>
+          &middot;
+          <span id="top-clock" class="top-bar__clock">08:00</span>
+        </div>
+        <button class="top-bar__settings" data-nav="housing" title="Moradia">&#x1F3E0;</button>
+      </div>
+
+      <!-- Dog Selector (multiple dogs) -->
+      <div id="dog-selector" class="dog-selector" style="display:none;"></div>
+
+      <!-- Room -->
+      <div id="game-room" class="home-screen__room room--apt-small">
+        <div class="room__floor"></div>
+        <div class="room__bowl">&#x1F37D;&#xFE0F;</div>
+        <div class="room__bed">&#x1F6CF;&#xFE0F;</div>
+      </div>
+
+      <!-- Stats Panel -->
+      <div id="stats-panel" class="stats-panel"></div>
+
+      <!-- Action Bar -->
+      <div id="action-bar" class="action-bar"></div>
+
+      <!-- Navigation -->
+      <div class="nav-buttons">
+        <button class="nav-btn nav-btn--active" data-nav="home">
+          <span class="nav-btn__icon">&#x1F3E0;</span>
+          <span>Casa</span>
+        </button>
+        <button class="nav-btn" data-nav="shelter">
+          <span class="nav-btn__icon">&#x1F43E;</span>
+          <span>Abrigo</span>
+        </button>
+        <button class="nav-btn" data-nav="shop">
+          <span class="nav-btn__icon">&#x1F6D2;</span>
+          <span>Loja</span>
+        </button>
+        <button class="nav-btn" data-nav="inventory">
+          <span class="nav-btn__icon">&#x1F392;</span>
+          <span>Itens</span>
+        </button>
+        <button class="nav-btn" data-nav="achievements">
+          <span class="nav-btn__icon">&#x1F3C6;</span>
+          <span>Conquistas</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: SHOP ===== -->
+    <div id="screen-shop" class="screen shop-screen">
+      <div class="top-bar">
+        <div class="top-bar__coins">&#x1F43E; <span id="shop-coins">0</span></div>
+        <div class="shop-screen__title">Lojinha</div>
+        <div></div>
+      </div>
+      <div id="shop-tabs" class="tabs" style="margin:8px 16px;"></div>
+      <div id="shop-items" class="shop-screen__items" style="padding:16px;overflow-y:auto;flex:1;"></div>
+      <div class="nav-buttons">
+        <button class="nav-btn" data-nav="home">
+          <span class="nav-btn__icon">&#x1F3E0;</span>
+          <span>Casa</span>
+        </button>
+        <button class="nav-btn nav-btn--active" data-nav="shop">
+          <span class="nav-btn__icon">&#x1F6D2;</span>
+          <span>Loja</span>
+        </button>
+        <button class="nav-btn" data-nav="inventory">
+          <span class="nav-btn__icon">&#x1F392;</span>
+          <span>Itens</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: INVENTORY ===== -->
+    <div id="screen-inventory" class="screen">
+      <div class="top-bar">
+        <div class="top-bar__coins">&#x1F43E; <span id="inv-coins">0</span></div>
+        <div style="font-weight:700;">Invent&aacute;rio</div>
+        <div></div>
+      </div>
+      <div id="inventory-items" style="padding:16px;overflow-y:auto;flex:1;"></div>
+      <div class="nav-buttons">
+        <button class="nav-btn" data-nav="home">
+          <span class="nav-btn__icon">&#x1F3E0;</span>
+          <span>Casa</span>
+        </button>
+        <button class="nav-btn" data-nav="shop">
+          <span class="nav-btn__icon">&#x1F6D2;</span>
+          <span>Loja</span>
+        </button>
+        <button class="nav-btn nav-btn--active" data-nav="inventory">
+          <span class="nav-btn__icon">&#x1F392;</span>
+          <span>Itens</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: ACHIEVEMENTS ===== -->
+    <div id="screen-achievements" class="screen achievements-screen">
+      <div class="top-bar">
+        <div></div>
+        <div style="font-weight:700;">Conquistas</div>
+        <div></div>
+      </div>
+      <div id="achievements-list" class="achievements-screen__list"></div>
+      <div class="nav-buttons">
+        <button class="nav-btn" data-nav="home">
+          <span class="nav-btn__icon">&#x1F3E0;</span>
+          <span>Casa</span>
+        </button>
+        <button class="nav-btn nav-btn--active" data-nav="achievements">
+          <span class="nav-btn__icon">&#x1F3C6;</span>
+          <span>Conquistas</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: HOUSING ===== -->
+    <div id="screen-housing" class="screen housing-screen">
+      <div class="top-bar">
+        <div class="top-bar__coins">&#x1F43E; <span id="housing-coins">0</span></div>
+        <div style="font-weight:700;">Moradia</div>
+        <div></div>
+      </div>
+      <div style="flex:1;overflow-y:auto;">
+        <div id="housing-current" class="housing-screen__current"></div>
+        <div id="housing-next" class="housing-screen__next"></div>
+      </div>
+      <div class="nav-buttons">
+        <button class="nav-btn" data-nav="home">
+          <span class="nav-btn__icon">&#x1F3E0;</span>
+          <span>Casa</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts: Load order matters! -->
+  <!-- Config & Data -->
+  <script src="js/config.js"></script>
+  <script src="js/data/breeds.js"></script>
+  <script src="js/data/items.js"></script>
+  <script src="js/data/achievements.js"></script>
+
+  <!-- Core -->
+  <script src="js/core/event-bus.js"></script>
+  <script src="js/core/game-state.js"></script>
+  <script src="js/core/time-engine.js"></script>
+  <script src="js/core/save-manager.js"></script>
+
+  <!-- Entities -->
+  <script src="js/entities/dog.js"></script>
+  <script src="js/entities/player.js"></script>
+
+  <!-- Systems -->
+  <script src="js/systems/stats-system.js"></script>
+  <script src="js/systems/action-system.js"></script>
+  <script src="js/systems/shelter-system.js"></script>
+  <script src="js/systems/shop-system.js"></script>
+  <script src="js/systems/progression-system.js"></script>
+  <script src="js/systems/runaway-system.js"></script>
+
+  <!-- UI -->
+  <script src="js/ui/screen-manager.js"></script>
+  <script src="js/ui/modal.js"></script>
+  <script src="js/ui/notifications.js"></script>
+  <script src="js/ui/dog-renderer.js"></script>
+  <script src="js/ui/ui-updater.js"></script>
+
+  <!-- Audio -->
+  <script src="js/audio/sound-manager.js"></script>
+
+  <!-- Bootstrap -->
+  <script src="js/main.js"></script>
+</body>
+</html>
