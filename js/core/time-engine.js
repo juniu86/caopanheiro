@@ -22,9 +22,7 @@ Game.TimeEngine = (function () {
     minuteCounter++;
     Game.State.gameTime.minute++;
 
-    Game.EventBus.emit('tick', { minute: minuteCounter });
-
-    // Hour tick
+    // Hour tick - check BEFORE emitting tick so display never shows :60
     if (Game.State.gameTime.minute >= Game.Config.GAME_MINUTES_PER_HOUR) {
       Game.State.gameTime.minute = 0;
       Game.State.gameTime.hour++;
@@ -38,6 +36,8 @@ Game.TimeEngine = (function () {
         Game.EventBus.emit('dayTick', { day: Game.State.gameTime.day });
       }
     }
+
+    Game.EventBus.emit('tick', { minute: minuteCounter });
 
     // Auto-save check
     if (minuteCounter % Game.Config.AUTO_SAVE_INTERVAL === 0) {
