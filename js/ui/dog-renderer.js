@@ -72,37 +72,34 @@ Game.DogRenderer = (function () {
     var sizeClass = 'dog-sprite-png--' + breed.group;
     if (breed.group === 'viralata') sizeClass = 'dog-sprite-png--medium';
 
-    // Get animation class
-    var animClass = '';
-    if (!options.static) {
-      if (dog.actionAnimation) {
-        animClass = 'dog-sprite-png--' + dog.actionAnimation;
-      } else {
-        var gameMood = Game.Dog.getMood(dog);
-        if (gameMood === 'sleeping') animClass = 'dog-sprite-png--sleeping';
-        else if (gameMood === 'sad' || gameMood === 'very_sad') animClass = 'dog-sprite-png--sad';
-        else animClass = 'dog-sprite-png--idle';
-      }
-    }
-
-    // Get PNG mood and image path
+    // Get PNG mood for image and CSS mood class
     var pngMood = getDogMood(dog);
     var imgSrc = getBreedImg(dog.breedId, pngMood);
+
+    // Map PNG mood to CSS mood class
+    var moodClass = '';
+    if (!options.static) {
+      var moodMap = {
+        feliz: 'mood-feliz',
+        triste: 'mood-triste',
+        dormindo: 'mood-dormindo',
+        com_fome: 'mood-com-fome',
+        doente: 'mood-doente'
+      };
+      moodClass = moodMap[pngMood] || 'mood-feliz';
+    }
 
     // Build SVG fallback for onerror
     var svgFallbackHtml = getSvgFallback(dog.breedId, Game.Dog.getMood(dog));
     var fallbackEscaped = svgFallbackHtml.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-    // Extras (flies, ZZZ)
+    // Extras (flies for dirty dogs only — Zzz is now CSS ::after on .mood-dormindo)
     var extras = '';
     if (dog.stats.hygiene < 20 && !dog.isAsleep) {
       extras += '<span class="dog-flies"><span>\uD83E\uDEB0</span><span>\uD83E\uDEB0</span><span>\uD83E\uDEB0</span></span>';
     }
-    if (dog.isAsleep) {
-      extras += '<span class="dog-zzz">Z<span style="font-size:0.7em;animation-delay:0.6s;">z</span><span style="font-size:0.5em;animation-delay:1.2s;">z</span></span>';
-    }
 
-    return '<div class="dog-sprite-png ' + sizeClass + ' ' + animClass + '">' +
+    return '<div class="dog-sprite-png ' + sizeClass + ' ' + moodClass + '">' +
       '<img src="' + imgSrc + '" alt="' + (breed.name || '') + '" ' +
         'draggable="false" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +

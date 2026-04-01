@@ -175,9 +175,25 @@ Game.UI = (function () {
         if (result.success) {
           Game.EventBus.emit('notification', { text: result.message, type: 'success' });
           Game.Audio.play(actionId);
-          // Play action scene with owner
+
+          // Apply action animation class on the dog sprite element
           var roomEl = document.getElementById('game-room');
           if (roomEl) {
+            var dogEl = roomEl.querySelector('.dog-in-room--selected .dog-sprite-png');
+            if (dogEl) {
+              // Remove any existing mood class temporarily, add action class
+              var actionClass = 'action-' + actionId;
+              dogEl.className = dogEl.className.replace(/\bmood-\S+/g, '').trim();
+              dogEl.classList.add(actionClass);
+
+              // Remove action class after 1500ms and restore mood class
+              setTimeout(function () {
+                dogEl.classList.remove(actionClass);
+                updateRoom(); // re-render restores the correct mood class
+              }, 1500);
+            }
+
+            // Play action scene with owner
             Game.DogRenderer.playActionScene(roomEl, actionId, function () {
               updateRoom();
             });
