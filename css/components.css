@@ -50,35 +50,43 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: var(--space-sm) var(--space-sm);
+  justify-content: center;
+  gap: 1px;
+  padding: 6px 2px;
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
-  min-width: 60px;
   transition: background var(--transition-fast), transform var(--transition-fast);
   color: var(--text-primary);
+  background: #F8F8F8;
+  border: 1px solid #EEE;
 }
 
 .action-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: #EFEFEF;
 }
 
 .action-btn:active {
   transform: scale(0.93);
+  background: var(--color-primary);
+  color: white;
 }
 
 .action-btn__icon {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  line-height: 1;
 }
 
 .action-btn__label {
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .action-btn--disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   pointer-events: none;
+  background: #F0F0F0;
 }
 
 /* Stat bars */

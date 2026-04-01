@@ -1,247 +1,223 @@
-/* CSS Dog Sprites - Base shapes per size group with color variations */
+/* CSS Dog Sprites - SVG-based breed-specific system */
 
-.dog-sprite {
+.dog-sprite-svg {
   position: relative;
   display: inline-block;
   transform-origin: bottom center;
 }
 
-/* ===== BASE DOG SHAPE ===== */
-.dog-sprite__body {
-  position: relative;
-  width: var(--dog-width, 60px);
-  height: var(--dog-height, 50px);
-  background: var(--dog-color, #D4A574);
-  border-radius: 50% 50% 40% 40%;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+.dog-sprite-svg svg {
+  display: block;
+  overflow: visible;
 }
 
-/* Head */
-.dog-sprite__head {
-  position: absolute;
-  top: calc(var(--dog-height, 50px) * -0.55);
-  width: calc(var(--dog-width, 60px) * 0.65);
-  height: calc(var(--dog-height, 50px) * 0.6);
-  background: var(--dog-color, #D4A574);
-  border-radius: 50% 50% 40% 40%;
+/* Size groups */
+.dog-sprite-svg--small svg { width: 80px; height: 80px; }
+.dog-sprite-svg--medium svg { width: 100px; height: 100px; }
+.dog-sprite-svg--large svg { width: 120px; height: 120px; }
+.dog-sprite-svg--giant svg { width: 140px; height: 140px; }
+
+/* Animation states */
+.dog-sprite-svg--idle svg {
+  animation: dog-breathe 2.5s ease-in-out infinite;
 }
 
-/* Eyes */
-.dog-sprite__head::before,
-.dog-sprite__head::after {
-  content: '';
-  position: absolute;
-  width: 6px;
-  height: 7px;
-  background: #2D3436;
-  border-radius: 50%;
-  top: 40%;
+.dog-sprite-svg--eating svg {
+  animation: dog-eat 0.5s ease-in-out infinite;
 }
 
-.dog-sprite__head::before { left: 25%; }
-.dog-sprite__head::after { right: 25%; }
-
-/* Nose */
-.dog-sprite__nose {
-  position: absolute;
-  bottom: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 8px;
-  height: 6px;
-  background: #2D3436;
-  border-radius: 50% 50% 40% 40%;
+.dog-sprite-svg--playing svg {
+  animation: dog-bounce 0.6s ease-in-out infinite;
 }
 
-/* Ears - default floppy */
-.dog-sprite__ear-left,
-.dog-sprite__ear-right {
+.dog-sprite-svg--sleeping svg {
+  animation: dog-sleep 3s ease-in-out infinite;
+}
+
+.dog-sprite-svg--bathing svg {
+  animation: dog-shake 0.25s ease-in-out infinite;
+}
+
+.dog-sprite-svg--walking svg {
+  animation: dog-walk 3s ease-in-out infinite;
+}
+
+.dog-sprite-svg--sad svg {
+  animation: dog-sad 2.5s ease-in-out infinite;
+}
+
+@keyframes dog-breathe {
+  0%, 100% { transform: scaleY(1) translateY(0); }
+  50% { transform: scaleY(1.02) translateY(-1px); }
+}
+
+@keyframes dog-eat {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg) translateY(3px); }
+  75% { transform: rotate(5deg) translateY(3px); }
+}
+
+@keyframes dog-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+
+@keyframes dog-sleep {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+@keyframes dog-shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  25% { transform: translateX(-5px) rotate(-3deg); }
+  75% { transform: translateX(5px) rotate(3deg); }
+}
+
+@keyframes dog-walk {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-15px); }
+  50% { transform: translateX(0); }
+  75% { transform: translateX(15px); }
+}
+
+@keyframes dog-sad {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(3px) scaleY(0.97); }
+}
+
+/* Tail wag */
+.dog-tail-wag {
+  animation: tail-wag 0.35s ease-in-out infinite alternate;
+  transform-origin: left center;
+}
+
+@keyframes tail-wag {
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(25deg); }
+}
+
+.dog-tail-slow {
+  animation: tail-wag 1.2s ease-in-out infinite alternate;
+  transform-origin: left center;
+}
+
+/* ZZZ for sleeping */
+.dog-zzz {
   position: absolute;
   top: -5px;
-  width: calc(var(--dog-width, 60px) * 0.25);
-  height: calc(var(--dog-height, 50px) * 0.35);
-  background: var(--dog-ear-color, var(--dog-color, #D4A574));
-  border-radius: var(--ear-radius, 50% 50% 50% 50%);
-  transform: var(--ear-transform-left, rotate(-15deg));
+  right: -10px;
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--color-info);
+  animation: zzz-up 2s ease-in-out infinite;
 }
 
-.dog-sprite__ear-left { left: -8px; }
-.dog-sprite__ear-right {
-  right: -8px;
-  transform: var(--ear-transform-right, rotate(15deg));
+@keyframes zzz-up {
+  0% { opacity: 1; transform: translateY(0) scale(0.7); }
+  100% { opacity: 0; transform: translateY(-25px) scale(1.2); }
 }
 
-/* Pointy ears override */
-.dog-sprite--pointy-ears .dog-sprite__ear-left,
-.dog-sprite--pointy-ears .dog-sprite__ear-right {
-  --ear-radius: 20% 80% 0 0;
-  height: calc(var(--dog-height, 50px) * 0.4);
-  top: -12px;
-}
-
-.dog-sprite--pointy-ears .dog-sprite__ear-left {
-  --ear-transform-left: rotate(-10deg);
-}
-
-.dog-sprite--pointy-ears .dog-sprite__ear-right {
-  --ear-transform-right: rotate(10deg);
-}
-
-/* Tail */
-.dog-sprite__tail {
+/* Flies for dirty */
+.dog-flies {
   position: absolute;
-  right: -8px;
-  top: 10%;
-  width: 12px;
-  height: 25px;
-  background: var(--dog-color, #D4A574);
-  border-radius: 50% 80% 80% 0;
-  transform-origin: bottom center;
-  animation: wag-tail 0.4s ease-in-out infinite alternate;
+  top: -5px;
+  right: -5px;
 }
 
-/* Legs */
-.dog-sprite__legs {
+.dog-flies span {
   position: absolute;
-  bottom: -12px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 15%;
+  font-size: 0.7rem;
+  animation: fly-buzz 1.5s ease-in-out infinite;
 }
 
-.dog-sprite__leg {
-  width: calc(var(--dog-width, 60px) * 0.15);
-  height: 14px;
-  background: var(--dog-leg-color, var(--dog-color, #D4A574));
-  border-radius: 0 0 4px 4px;
+.dog-flies span:nth-child(2) {
+  animation-delay: 0.5s;
+  left: 10px;
+  top: -5px;
 }
 
-/* ===== SIZE GROUPS ===== */
-.dog-sprite--small {
-  --dog-width: 45px;
-  --dog-height: 38px;
+.dog-flies span:nth-child(3) {
+  animation-delay: 1s;
+  left: -5px;
+  top: 5px;
 }
 
-.dog-sprite--medium {
-  --dog-width: 60px;
-  --dog-height: 50px;
+@keyframes fly-buzz {
+  0%, 100% { transform: translate(0,0); }
+  25% { transform: translate(4px, -3px); }
+  50% { transform: translate(-3px, -5px); }
+  75% { transform: translate(-4px, 2px); }
 }
 
-.dog-sprite--large {
-  --dog-width: 75px;
-  --dog-height: 60px;
-}
-
-.dog-sprite--giant {
-  --dog-width: 90px;
-  --dog-height: 72px;
-}
-
-/* ===== BREED COLORS ===== */
-
-/* Small */
-.dog-poodle { --dog-color: #F5F5F5; --dog-ear-color: #E8E8E8; }
-.dog-shih-tzu { --dog-color: #F0E6D3; --dog-ear-color: #C4A882; }
-.dog-yorkshire { --dog-color: #8B7355; --dog-ear-color: #6B5740; }
-.dog-chihuahua { --dog-color: #E8C99B; --dog-ear-color: #D4A574; }
-.dog-pinscher { --dog-color: #2D2D2D; --dog-ear-color: #8B4513; }
-.dog-lhasa-apso { --dog-color: #F5DEB3; --dog-ear-color: #DEB887; }
-.dog-maltes { --dog-color: #FEFEFE; --dog-ear-color: #F5F5F5; }
-.dog-pug { --dog-color: #E8D5B7; --dog-ear-color: #2D2D2D; }
-
-/* Medium */
-.dog-beagle { --dog-color: #F5F5F5; --dog-ear-color: #8B4513; }
-.dog-cocker { --dog-color: #D4A574; --dog-ear-color: #B8860B; }
-.dog-border-collie { --dog-color: #2D2D2D; --dog-ear-color: #2D2D2D; }
-.dog-bulldog-frances { --dog-color: #E8D5B7; --dog-ear-color: #D4A574; }
-.dog-bull-terrier { --dog-color: #F5F5F5; --dog-ear-color: #F5F5F5; }
-.dog-basenji { --dog-color: #CD853F; --dog-ear-color: #A0522D; }
-.dog-schnauzer { --dog-color: #808080; --dog-ear-color: #696969; }
-.dog-corgi { --dog-color: #F4A460; --dog-ear-color: #E8C99B; }
-
-/* Large */
-.dog-golden { --dog-color: #DAA520; --dog-ear-color: #CD9B1D; }
-.dog-labrador { --dog-color: #F5DEB3; --dog-ear-color: #E8C99B; }
-.dog-husky { --dog-color: #B0C4DE; --dog-ear-color: #F5F5F5; }
-.dog-pastor-alemao { --dog-color: #8B7355; --dog-ear-color: #2D2D2D; }
-.dog-dalmata { --dog-color: #F5F5F5; --dog-ear-color: #F5F5F5; }
-.dog-boxer { --dog-color: #CD853F; --dog-ear-color: #A0522D; }
-.dog-pitbull { --dog-color: #D4A574; --dog-ear-color: #C49362; }
-.dog-akita { --dog-color: #F4A460; --dog-ear-color: #E8C99B; }
-
-/* Giant */
-.dog-sao-bernardo { --dog-color: #CD853F; --dog-ear-color: #8B4513; }
-.dog-dogue-alemao { --dog-color: #F5DEB3; --dog-ear-color: #E8C99B; }
-.dog-rottweiler { --dog-color: #2D2D2D; --dog-ear-color: #2D2D2D; }
-.dog-mastiff { --dog-color: #E8C99B; --dog-ear-color: #D4A574; }
-.dog-terra-nova { --dog-color: #2D2D2D; --dog-ear-color: #1A1A1A; }
-
-/* Vira-latas */
-.dog-caramelo { --dog-color: #DAA520; --dog-ear-color: #CD9B1D; }
-.dog-pretinho { --dog-color: #2D2D2D; --dog-ear-color: #1A1A1A; }
-
-/* Special markings */
-.dog-dalmata .dog-sprite__body::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-image:
-    radial-gradient(circle 4px at 20% 30%, #2D2D2D 100%, transparent 100%),
-    radial-gradient(circle 3px at 60% 20%, #2D2D2D 100%, transparent 100%),
-    radial-gradient(circle 5px at 40% 60%, #2D2D2D 100%, transparent 100%),
-    radial-gradient(circle 3px at 75% 50%, #2D2D2D 100%, transparent 100%),
-    radial-gradient(circle 4px at 30% 75%, #2D2D2D 100%, transparent 100%);
-  border-radius: inherit;
-}
-
-/* Pug flat face */
-.dog-pug .dog-sprite__head {
-  border-radius: 50%;
-  width: calc(var(--dog-width, 60px) * 0.7);
-}
-
-/* Schnauzer beard */
-.dog-schnauzer .dog-sprite__nose::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 14px;
-  height: 8px;
-  background: #A9A9A9;
-  border-radius: 0 0 50% 50%;
-}
-
-/* Corgi short legs */
-.dog-corgi .dog-sprite__leg {
-  height: 8px;
-}
-
-/* Emoji fallback for breed card previews */
-.breed-emoji {
-  font-size: 3rem;
-  line-height: 1;
-}
-
-/* Dog in room positioning */
+/* Dog in room */
 .dog-in-room {
   position: absolute;
-  bottom: 15%;
+  bottom: 12%;
   cursor: pointer;
-  transition: left 0.5s ease;
+  transition: left 0.5s ease, transform 0.2s ease;
+  z-index: 2;
 }
 
-.dog-in-room:nth-child(1) { left: 30%; }
-.dog-in-room:nth-child(2) { left: 55%; }
-.dog-in-room:nth-child(3) { left: 15%; }
-.dog-in-room:nth-child(4) { left: 70%; }
+.dog-in-room:hover {
+  transform: scale(1.05);
+}
 
 .dog-in-room--selected {
-  filter: drop-shadow(0 0 6px var(--color-primary));
+  filter: drop-shadow(0 0 8px var(--color-primary));
+  z-index: 3;
+}
+
+/* Owner character */
+.owner-sprite {
+  position: absolute;
+  z-index: 4;
+  transition: all 0.5s ease;
+}
+
+.owner-sprite svg {
+  width: 60px;
+  height: 90px;
+}
+
+.owner-sprite--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.owner-sprite--feeding {
+  animation: owner-kneel 0.6s ease-in-out;
+}
+
+.owner-sprite--playing {
+  animation: owner-throw 0.8s ease-in-out;
+}
+
+.owner-sprite--bathing {
+  animation: owner-scrub 0.5s ease-in-out infinite;
+}
+
+.owner-sprite--carinho {
+  animation: owner-pet 0.6s ease-in-out infinite;
+}
+
+@keyframes owner-kneel {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+
+@keyframes owner-throw {
+  0% { transform: rotate(0); }
+  30% { transform: rotate(-20deg); }
+  60% { transform: rotate(10deg); }
+  100% { transform: rotate(0); }
+}
+
+@keyframes owner-scrub {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+@keyframes owner-pet {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }

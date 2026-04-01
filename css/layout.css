@@ -69,18 +69,14 @@
 
 /* Action bar */
 .action-bar {
-  display: flex;
-  gap: var(--space-xs);
-  padding: var(--space-sm);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  padding: var(--space-xs) var(--space-sm);
   background: var(--bg-card);
-  box-shadow: var(--shadow-md);
-  overflow-x: auto;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
   flex-shrink: 0;
   z-index: 10;
-}
-
-.action-bar::-webkit-scrollbar {
-  display: none;
 }
 
 /* Center content helper */

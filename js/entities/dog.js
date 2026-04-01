@@ -66,11 +66,11 @@ Game.Dog = (function () {
   }
 
   function getAnimationClass(dog) {
-    if (dog.actionAnimation) return 'dog-sprite--' + dog.actionAnimation;
+    if (dog.actionAnimation) return 'dog-sprite-svg--' + dog.actionAnimation;
     var mood = getMood(dog);
-    if (mood === 'sleeping') return 'dog-sprite--sleeping';
-    if (mood === 'sad' || mood === 'very_sad') return 'dog-sprite--sad';
-    return 'dog-sprite--idle';
+    if (mood === 'sleeping') return 'dog-sprite-svg--sleeping';
+    if (mood === 'sad' || mood === 'very_sad') return 'dog-sprite-svg--sad';
+    return 'dog-sprite-svg--idle';
   }
 
   function canDoAction(dog, actionId) {
