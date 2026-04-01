@@ -175,6 +175,13 @@ Game.UI = (function () {
         if (result.success) {
           Game.EventBus.emit('notification', { text: result.message, type: 'success' });
           Game.Audio.play(actionId);
+          // Play action scene with owner
+          var roomEl = document.getElementById('game-room');
+          if (roomEl) {
+            Game.DogRenderer.playActionScene(roomEl, actionId, function () {
+              updateRoom();
+            });
+          }
         } else {
           Game.EventBus.emit('notification', { text: result.message, type: 'warning' });
         }
@@ -219,8 +226,9 @@ Game.UI = (function () {
     var html = '';
     breeds.forEach(function (breed) {
       var diffLabel = Game.Breeds.getDifficultyLabel(breed.difficulty);
+      var preview = Game.DogRenderer.renderBreedPreview(breed.id);
       html += '<div class="breed-card" data-breed-id="' + breed.id + '">' +
-        '<div class="breed-emoji">' + breed.emoji + '</div>' +
+        '<div class="breed-card__preview">' + preview + '</div>' +
         '<div class="breed-card__name">' + breed.name + '</div>' +
         '<div class="breed-card__difficulty">' + diffLabel + '</div>' +
       '</div>';
@@ -293,7 +301,7 @@ Game.UI = (function () {
     var adoptBtnClass = canAdopt ? 'btn btn--primary' : 'btn btn--primary btn--disabled';
 
     var html = '<div class="breed-detail">' +
-      '<div class="breed-detail__sprite">' + breed.emoji + '</div>' +
+      '<div class="breed-detail__sprite">' + Game.DogRenderer.renderBreedPreview(breedId) + '</div>' +
       '<div class="breed-detail__name">' + breed.name + '</div>' +
       '<div class="breed-detail__personality">' + breed.personality + '</div>' +
       '<span class="breed-detail__difficulty ' + diffClass + '">' + diffLabel + '</span>' +
@@ -330,7 +338,7 @@ Game.UI = (function () {
     var nameInput = document.getElementById('dog-name-input');
     var confirmBtn = document.getElementById('confirm-dog-name-btn');
 
-    if (breedPreview) breedPreview.innerHTML = '<div class="breed-emoji" style="font-size:5rem;">' + breed.emoji + '</div>';
+    if (breedPreview) breedPreview.innerHTML = '<div class="dog-sprite-svg dog-sprite-svg--large dog-sprite-svg--idle">' + Game.SvgDogs.generate(breedId, { mood: 'happy' }) + '</div>';
     if (breedNameEl) breedNameEl.textContent = breed.name;
     if (nameInput) nameInput.value = '';
 

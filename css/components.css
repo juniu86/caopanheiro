@@ -93,27 +93,27 @@
 .stat-bar {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xs);
+  gap: 6px;
+  margin-bottom: 2px;
 }
 
 .stat-bar__icon {
-  font-size: 1rem;
-  width: 20px;
+  font-size: 0.85rem;
+  width: 18px;
   text-align: center;
 }
 
 .stat-bar__track {
   flex: 1;
-  height: 12px;
+  height: 10px;
   background: #E8E8E8;
-  border-radius: 6px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
 .stat-bar__fill {
   height: 100%;
-  border-radius: 6px;
+  border-radius: 5px;
   transition: width 0.5s ease;
   min-width: 0;
 }
@@ -126,9 +126,9 @@
 .stat-bar__fill--learning { background: var(--stat-learning); }
 
 .stat-bar__value {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  min-width: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 26px;
   text-align: right;
 }
 
@@ -239,9 +239,16 @@
   box-shadow: var(--shadow-md);
 }
 
+.breed-card__preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70px;
+}
+
 .breed-card__name {
   font-weight: 700;
-  margin-top: var(--space-sm);
+  margin-top: var(--space-xs);
 }
 
 .breed-card__difficulty {

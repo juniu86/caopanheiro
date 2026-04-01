@@ -91,8 +91,11 @@
 }
 
 .breed-detail__sprite {
-  font-size: 5rem;
-  margin: var(--space-md) 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-sm) 0;
+  min-height: 80px;
 }
 
 .breed-detail__name {
@@ -279,22 +282,23 @@
 
 /* Stat panel on home screen */
 .stats-panel {
-  padding: var(--space-sm) var(--space-md);
+  padding: 4px var(--space-md) 2px;
   background: var(--bg-card);
   border-top: 1px solid #EEE;
+  flex-shrink: 0;
 }
 
 .stats-panel__dog-name {
   font-weight: 700;
-  font-size: var(--font-size-md);
-  margin-bottom: var(--space-xs);
+  font-size: 0.9rem;
+  margin-bottom: 1px;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
 .stats-panel__mood {
-  font-size: var(--font-size-sm);
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
