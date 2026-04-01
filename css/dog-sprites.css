@@ -1,48 +1,84 @@
-/* CSS Dog Sprites - SVG-based breed-specific system */
+/* ===== PNG DOG SPRITES ===== */
 
-.dog-sprite-svg {
+.dog-sprite-png {
   position: relative;
   display: inline-block;
   transform-origin: bottom center;
 }
 
-.dog-sprite-svg svg {
+.dog-sprite-png img {
+  display: block;
+  max-width: 180px;
+  height: auto;
+  object-fit: contain;
+  image-rendering: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Fallback SVG container */
+.dog-sprite-png__fallback {
+  display: none;
+}
+
+.dog-sprite-png__fallback svg {
   display: block;
   overflow: visible;
 }
 
-/* Size groups */
-.dog-sprite-svg--small svg { width: 80px; height: 80px; }
-.dog-sprite-svg--medium svg { width: 100px; height: 100px; }
-.dog-sprite-svg--large svg { width: 120px; height: 120px; }
-.dog-sprite-svg--giant svg { width: 140px; height: 140px; }
+/* Size groups for room display */
+.dog-sprite-png--small img { max-width: 100px; }
+.dog-sprite-png--medium img { max-width: 130px; }
+.dog-sprite-png--large img { max-width: 160px; }
+.dog-sprite-png--giant img { max-width: 180px; }
+.dog-sprite-png--viralata img { max-width: 130px; }
 
-/* Animation states */
-.dog-sprite-svg--idle svg {
+/* SVG fallback sizes */
+.dog-sprite-png--small .dog-sprite-png__fallback svg { width: 80px; height: 80px; }
+.dog-sprite-png--medium .dog-sprite-png__fallback svg { width: 100px; height: 100px; }
+.dog-sprite-png--large .dog-sprite-png__fallback svg { width: 120px; height: 120px; }
+.dog-sprite-png--giant .dog-sprite-png__fallback svg { width: 140px; height: 140px; }
+
+/* Preview size (shelter cards, modals) */
+.dog-sprite-png--preview img {
+  width: 90px;
+  height: 90px;
+  max-width: none;
+  object-fit: contain;
+}
+
+.dog-sprite-png--preview .dog-sprite-png__fallback svg {
+  width: 90px;
+  height: 90px;
+}
+
+/* ===== ANIMATION STATES ===== */
+
+.dog-sprite-png--idle {
   animation: dog-breathe 2.5s ease-in-out infinite;
 }
 
-.dog-sprite-svg--eating svg {
+.dog-sprite-png--eating {
   animation: dog-eat 0.5s ease-in-out infinite;
 }
 
-.dog-sprite-svg--playing svg {
+.dog-sprite-png--playing {
   animation: dog-bounce 0.6s ease-in-out infinite;
 }
 
-.dog-sprite-svg--sleeping svg {
+.dog-sprite-png--sleeping {
   animation: dog-sleep 3s ease-in-out infinite;
 }
 
-.dog-sprite-svg--bathing svg {
+.dog-sprite-png--bathing {
   animation: dog-shake 0.25s ease-in-out infinite;
 }
 
-.dog-sprite-svg--walking svg {
+.dog-sprite-png--walking {
   animation: dog-walk 3s ease-in-out infinite;
 }
 
-.dog-sprite-svg--sad svg {
+.dog-sprite-png--sad {
   animation: dog-sad 2.5s ease-in-out infinite;
 }
 
@@ -85,30 +121,15 @@
   50% { transform: translateY(3px) scaleY(0.97); }
 }
 
-/* Tail wag */
-.dog-tail-wag {
-  animation: tail-wag 0.35s ease-in-out infinite alternate;
-  transform-origin: left center;
-}
+/* ===== EXTRAS (ZZZ, flies) ===== */
 
-@keyframes tail-wag {
-  0% { transform: rotate(-15deg); }
-  100% { transform: rotate(25deg); }
-}
-
-.dog-tail-slow {
-  animation: tail-wag 1.2s ease-in-out infinite alternate;
-  transform-origin: left center;
-}
-
-/* ZZZ for sleeping */
 .dog-zzz {
   position: absolute;
   top: -5px;
   right: -10px;
   font-size: 1rem;
   font-weight: 900;
-  color: var(--color-info);
+  color: var(--color-info, #74C0FC);
   animation: zzz-up 2s ease-in-out infinite;
 }
 
@@ -117,7 +138,6 @@
   100% { opacity: 0; transform: translateY(-25px) scale(1.2); }
 }
 
-/* Flies for dirty */
 .dog-flies {
   position: absolute;
   top: -5px;
@@ -149,7 +169,8 @@
   75% { transform: translate(-4px, 2px); }
 }
 
-/* Dog in room */
+/* ===== DOG IN ROOM POSITIONING ===== */
+
 .dog-in-room {
   position: absolute;
   bottom: 12%;
@@ -163,11 +184,12 @@
 }
 
 .dog-in-room--selected {
-  filter: drop-shadow(0 0 8px var(--color-primary));
+  filter: drop-shadow(0 0 8px var(--color-primary, #FF8C42));
   z-index: 3;
 }
 
-/* Owner character */
+/* ===== OWNER CHARACTER (SVG) ===== */
+
 .owner-sprite {
   position: absolute;
   z-index: 4;

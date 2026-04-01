@@ -3,34 +3,115 @@ var Game = Game || {};
 Game.DogRenderer = (function () {
   var currentActionScene = null;
 
+  // ===== BREED ID → PNG FILE PREFIX MAPPING =====
+  var BREED_TO_PNG = {
+    poodle: 'poodle_toy',
+    shih_tzu: 'shih_tzu',
+    yorkshire: 'yorkshire',
+    chihuahua: 'chihuahua',
+    pinscher: 'pinscher',
+    lhasa_apso: 'lhasa_apso',
+    maltes: 'malt\u00eas',
+    pug: 'pug',
+    beagle: 'beagle',
+    cocker: 'cocker_spaniel',
+    border_collie: 'border_collie',
+    bulldog_frances: 'bulldog_franc\u00eas',
+    bull_terrier: 'bull_terrier',
+    basenji: 'basenji',
+    schnauzer: 'schnauzer',
+    corgi: 'corgi',
+    golden: 'golden_retriever',
+    labrador: 'labrador',
+    husky: 'husky_siberiano',
+    pastor_alemao: 'pastor_alemao',
+    dalmata: 'dalmata',
+    boxer: 'boxer',
+    pitbull: 'pitbull',
+    akita: 'akita',
+    sao_bernardo: 'sao_bernardo',
+    dogue_alemao: 'dogue_alemao',
+    rottweiler: 'rottweiler',
+    mastiff: 'mastiff',
+    terra_nova: 'terra_nova',
+    caramelo: 'caramelo',
+    pretinho: 'pretinho'
+  };
+
+  // ===== getDogMood: determines PNG mood from dog stats =====
+  function getDogMood(dog) {
+    var s = dog.stats;
+    if (s.energy < 20 || dog.isAsleep) return 'dormindo';
+    if (s.health < 25) return 'doente';
+    if (s.hunger < 25) return 'com_fome';
+    var avg = (s.hunger + s.happiness + s.energy + s.hygiene + s.health) / 5;
+    if (avg < 35) return 'triste';
+    return 'feliz';
+  }
+
+  // ===== getBreedImg: returns PNG path =====
+  function getBreedImg(breedId, mood) {
+    var prefix = BREED_TO_PNG[breedId] || breedId;
+    return 'img/breeds/' + prefix + '_' + mood + '.png';
+  }
+
+  // ===== SVG FALLBACK: generates SVG HTML for breeds without PNGs =====
+  function getSvgFallback(breedId, mood) {
+    if (Game.SvgDogs && Game.SvgDogs.generate) {
+      return Game.SvgDogs.generate(breedId, { mood: mood });
+    }
+    return '';
+  }
+
+  // ===== RENDER DOG SPRITE (main function) =====
   function renderDogSprite(dog, options) {
     options = options || {};
     var breed = Game.Breeds.getById(dog.breedId);
     if (!breed) return '';
 
-    var sizeClass = 'dog-sprite-svg--' + breed.group;
-    if (breed.group === 'viralata') sizeClass = 'dog-sprite-svg--medium';
-    var animClass = options.static ? '' : Game.Dog.getAnimationClass(dog);
+    var sizeClass = 'dog-sprite-png--' + breed.group;
+    if (breed.group === 'viralata') sizeClass = 'dog-sprite-png--medium';
 
-    var mood = Game.Dog.getMood(dog);
-    var svgOpts = { mood: mood };
-    if (dog.isAsleep) svgOpts.mood = 'sleeping';
+    // Get animation class
+    var animClass = '';
+    if (!options.static) {
+      if (dog.actionAnimation) {
+        animClass = 'dog-sprite-png--' + dog.actionAnimation;
+      } else {
+        var gameMood = Game.Dog.getMood(dog);
+        if (gameMood === 'sleeping') animClass = 'dog-sprite-png--sleeping';
+        else if (gameMood === 'sad' || gameMood === 'very_sad') animClass = 'dog-sprite-png--sad';
+        else animClass = 'dog-sprite-png--idle';
+      }
+    }
 
-    var svgHtml = Game.SvgDogs.generate(dog.breedId, svgOpts);
+    // Get PNG mood and image path
+    var pngMood = getDogMood(dog);
+    var imgSrc = getBreedImg(dog.breedId, pngMood);
 
+    // Build SVG fallback for onerror
+    var svgFallbackHtml = getSvgFallback(dog.breedId, Game.Dog.getMood(dog));
+    var fallbackEscaped = svgFallbackHtml.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+    // Extras (flies, ZZZ)
     var extras = '';
-    if (dog.stats.hygiene < 20 && mood !== 'sleeping') {
+    if (dog.stats.hygiene < 20 && !dog.isAsleep) {
       extras += '<span class="dog-flies"><span>\uD83E\uDEB0</span><span>\uD83E\uDEB0</span><span>\uD83E\uDEB0</span></span>';
     }
     if (dog.isAsleep) {
       extras += '<span class="dog-zzz">Z<span style="font-size:0.7em;animation-delay:0.6s;">z</span><span style="font-size:0.5em;animation-delay:1.2s;">z</span></span>';
     }
 
-    return '<div class="dog-sprite-svg ' + sizeClass + ' ' + animClass + '">' +
-      svgHtml + extras +
+    return '<div class="dog-sprite-png ' + sizeClass + ' ' + animClass + '">' +
+      '<img src="' + imgSrc + '" alt="' + (breed.name || '') + '" ' +
+        'draggable="false" ' +
+        'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
+      '<div class="dog-sprite-png__fallback" style="display:none;">' + svgFallbackHtml + '</div>' +
+      extras +
     '</div>';
   }
 
+  // ===== RENDER DOGS IN ROOM =====
   function renderDogsInRoom(roomEl) {
     if (!roomEl || !Game.State) return;
     var existing = roomEl.querySelectorAll('.dog-in-room');
@@ -59,12 +140,20 @@ Game.DogRenderer = (function () {
     });
   }
 
+  // ===== RENDER BREED PREVIEW (shelter, detail modal, adoption) =====
   function renderBreedPreview(breedId) {
-    var svgHtml = Game.SvgDogs.generate(breedId, { mood: 'happy' });
-    return '<div class="dog-sprite-svg dog-sprite-svg--medium dog-sprite-svg--idle">' + svgHtml + '</div>';
+    var imgSrc = getBreedImg(breedId, 'feliz');
+    var svgFallbackHtml = getSvgFallback(breedId, 'happy');
+
+    return '<div class="dog-sprite-png dog-sprite-png--preview">' +
+      '<img src="' + imgSrc + '" alt="" draggable="false" ' +
+        'style="width:90px;height:90px;object-fit:contain;" ' +
+        'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
+      '<div class="dog-sprite-png__fallback" style="display:none;">' + svgFallbackHtml + '</div>' +
+    '</div>';
   }
 
-  // ===== OWNER CHARACTER =====
+  // ===== OWNER CHARACTER (unchanged - still uses SVG) =====
   function showOwner(roomEl, action) {
     var ownerEl = document.getElementById('owner-sprite');
     if (!ownerEl) return;
@@ -73,7 +162,6 @@ Game.DogRenderer = (function () {
     ownerEl.innerHTML = ownerSvg;
     ownerEl.className = 'owner-sprite';
 
-    // Position owner next to selected dog
     var selectedDogEl = roomEl.querySelector('.dog-in-room--selected');
     if (selectedDogEl) {
       var dogLeft = parseInt(selectedDogEl.style.left) || 35;
@@ -97,7 +185,7 @@ Game.DogRenderer = (function () {
     }
   }
 
-  // ===== ACTION SCENES =====
+  // ===== ACTION SCENES (unchanged) =====
   var actionSceneItems = {
     feed: { emoji: '\uD83C\uDF56', text: 'Nhom nhom!' },
     play: { emoji: '\u26BD', text: 'Vamos brincar!' },
@@ -118,19 +206,16 @@ Game.DogRenderer = (function () {
     var info = actionSceneItems[actionId];
     if (!info) { if (callback) callback(); return; }
 
-    // Show owner
     showOwner(roomEl, actionId === 'feed' ? 'feeding' :
                        actionId === 'play' ? 'playing' :
                        actionId === 'bathe' ? 'bathing' :
                        actionId === 'carinho' ? 'carinho' : 'feeding');
 
-    // Show action scene
     sceneEl.innerHTML =
       '<div class="action-scene__text">' + info.text + '</div>' +
       '<div class="action-scene__item" style="top:30%;left:45%;">' + info.emoji + '</div>';
     sceneEl.classList.add('action-scene--active');
 
-    // Clear after animation
     if (currentActionScene) clearTimeout(currentActionScene);
     currentActionScene = setTimeout(function () {
       sceneEl.classList.remove('action-scene--active');
@@ -142,6 +227,8 @@ Game.DogRenderer = (function () {
   }
 
   return {
+    getDogMood: getDogMood,
+    getBreedImg: getBreedImg,
     renderDogSprite: renderDogSprite,
     renderDogsInRoom: renderDogsInRoom,
     renderBreedPreview: renderBreedPreview,

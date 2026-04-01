@@ -338,7 +338,7 @@ Game.UI = (function () {
     var nameInput = document.getElementById('dog-name-input');
     var confirmBtn = document.getElementById('confirm-dog-name-btn');
 
-    if (breedPreview) breedPreview.innerHTML = '<div class="dog-sprite-svg dog-sprite-svg--large dog-sprite-svg--idle">' + Game.SvgDogs.generate(breedId, { mood: 'happy' }) + '</div>';
+    if (breedPreview) breedPreview.innerHTML = Game.DogRenderer.renderBreedPreview(breedId);
     if (breedNameEl) breedNameEl.textContent = breed.name;
     if (nameInput) nameInput.value = '';
 
