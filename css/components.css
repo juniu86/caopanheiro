@@ -539,3 +539,141 @@
   color: var(--color-primary);
   white-space: nowrap;
 }
+
+/* ===== SPEECH BUBBLE ===== */
+.speech-bubble {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  background: white;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  max-width: 80%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+
+.speech-bubble--visible {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+/* ===== MINIGAME OVERLAY ===== */
+.minigame-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+
+.minigame {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  animation: minigame-pop 0.3s ease;
+}
+
+@keyframes minigame-pop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.minigame__title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.minigame__instruction {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.minigame__timer {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--color-danger);
+  margin-bottom: 4px;
+}
+
+.minigame__score {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.minigame__target {
+  position: absolute;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  user-select: none;
+  animation: target-appear 0.2s ease;
+}
+
+.minigame__target:hover {
+  transform: scale(1.2);
+}
+
+@keyframes target-appear {
+  from { transform: scale(0) rotate(-20deg); }
+  to { transform: scale(1) rotate(0); }
+}
+
+.minigame__btn {
+  font-size: 1.8rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  border: 2px solid #DDD;
+  background: white;
+  cursor: pointer;
+  transition: transform 0.1s ease, border-color 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minigame__btn:hover {
+  border-color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.minigame__btn:active {
+  transform: scale(0.9);
+  background: var(--color-primary);
+}

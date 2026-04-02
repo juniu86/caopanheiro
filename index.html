@@ -99,6 +99,8 @@
         <div class="room__floor"></div>
         <div class="room__bowl">&#x1F37D;&#xFE0F;</div>
         <div class="room__bed">&#x1F6CF;&#xFE0F;</div>
+        <!-- Speech bubble -->
+        <div id="speech-bubble" class="speech-bubble"></div>
         <!-- Owner character (hidden until action) -->
         <div id="owner-sprite" class="owner-sprite owner-sprite--hidden"></div>
         <!-- Action scene overlay -->
@@ -230,6 +232,9 @@
       </div>
     </div>
 
+    <!-- Minigame Overlay (global, on top of everything) -->
+    <div id="minigame-overlay" class="minigame-overlay"></div>
+
   </div>
 
   <!-- Scripts: Load order matters! -->
@@ -261,6 +266,9 @@
   <script src="js/systems/combo-system.js"></script>
   <script src="js/systems/random-events-system.js"></script>
   <script src="js/systems/missions-system.js"></script>
+  <script src="js/systems/speech-system.js"></script>
+  <script src="js/systems/tab-notify-system.js"></script>
+  <script src="js/systems/minigame-system.js"></script>
 
   <!-- UI -->
   <script src="js/ui/svg-dogs.js"></script>

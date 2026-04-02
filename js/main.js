@@ -22,6 +22,8 @@ var Game = Game || {};
       Game.ComboSystem.init();
       Game.RandomEventsSystem.init();
       Game.MissionsSystem.init();
+      Game.SpeechSystem.init();
+      Game.TabNotifySystem.init();
 
       // Process offline time
       var offlineData = Game.TimeEngine.processOfflineTime();

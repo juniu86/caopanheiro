@@ -177,6 +177,35 @@ Game.UI = (function () {
     panel.innerHTML = html;
   }
 
+  function doAction(dog, actionId) {
+    var result = Game.ActionSystem.performAction(dog, actionId);
+    if (result.success) {
+      Game.EventBus.emit('notification', { text: result.message, type: 'success' });
+      Game.Audio.play(actionId);
+
+      var roomEl = document.getElementById('game-room');
+      if (roomEl) {
+        var dogEl = roomEl.querySelector('.dog-in-room--selected .dog-sprite-png');
+        if (dogEl) {
+          var actionClass = 'action-' + actionId;
+          dogEl.className = dogEl.className.replace(/\bmood-\S+/g, '').trim();
+          dogEl.classList.add(actionClass);
+          setTimeout(function () {
+            dogEl.classList.remove(actionClass);
+            updateRoom();
+          }, 1500);
+        }
+
+        Game.DogRenderer.playActionScene(roomEl, actionId, function () {
+          updateRoom();
+        });
+      }
+    } else {
+      Game.EventBus.emit('notification', { text: result.message, type: 'warning' });
+    }
+    updateHomeScreen();
+  }
+
   function updateActionBar() {
     var bar = document.getElementById('action-bar');
     if (!bar) return;
@@ -204,37 +233,15 @@ Game.UI = (function () {
     bar.querySelectorAll('.action-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var actionId = btn.getAttribute('data-action');
-        var result = Game.ActionSystem.performAction(dog, actionId);
-        if (result.success) {
-          Game.EventBus.emit('notification', { text: result.message, type: 'success' });
-          Game.Audio.play(actionId);
 
-          // Apply action animation class on the dog sprite element
-          var roomEl = document.getElementById('game-room');
-          if (roomEl) {
-            var dogEl = roomEl.querySelector('.dog-in-room--selected .dog-sprite-png');
-            if (dogEl) {
-              // Remove any existing mood class temporarily, add action class
-              var actionClass = 'action-' + actionId;
-              dogEl.className = dogEl.className.replace(/\bmood-\S+/g, '').trim();
-              dogEl.classList.add(actionClass);
-
-              // Remove action class after 1500ms and restore mood class
-              setTimeout(function () {
-                dogEl.classList.remove(actionClass);
-                updateRoom(); // re-render restores the correct mood class
-              }, 1500);
-            }
-
-            // Play action scene with owner
-            Game.DogRenderer.playActionScene(roomEl, actionId, function () {
-              updateRoom();
-            });
-          }
+        // Check if this action has a minigame
+        if (Game.MinigameSystem && Game.MinigameSystem.canPlay(actionId)) {
+          Game.MinigameSystem.startMinigame(actionId, dog, function () {
+            doAction(dog, actionId);
+          });
         } else {
-          Game.EventBus.emit('notification', { text: result.message, type: 'warning' });
+          doAction(dog, actionId);
         }
-        updateHomeScreen();
       });
     });
   }
