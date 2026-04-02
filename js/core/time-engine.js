@@ -96,6 +96,12 @@ Game.TimeEngine = (function () {
     });
     Game.State.dogs = Game.State.dogs.filter(function (d) { return !d.hasRunAway; });
 
+    // Offline random events
+    if (Game.RandomEventsSystem && Game.RandomEventsSystem.processOfflineEvents) {
+      var randomEvents = Game.RandomEventsSystem.processOfflineEvents(gameHoursElapsed);
+      randomEvents.forEach(function (e) { events.push(e); });
+    }
+
     // Advance game time
     var totalMinutes = Math.floor(gameHoursElapsed * 60);
     advanceGameTime(totalMinutes);

@@ -51,6 +51,27 @@ Game.UI = (function () {
     if (shopCoins) shopCoins.textContent = Game.State.player.pataCoins;
     if (invCoins) invCoins.textContent = Game.State.player.pataCoins;
     if (housingCoins) housingCoins.textContent = Game.State.player.pataCoins;
+
+    // Streak indicator
+    var streakEl = document.getElementById('top-streak');
+    if (streakEl && Game.StreakSystem) {
+      var streak = Game.StreakSystem.getStreak();
+      streakEl.textContent = streak > 0 ? '\uD83D\uDD25' + streak : '';
+      streakEl.style.display = streak > 0 ? 'inline' : 'none';
+    }
+
+    // Combo indicator
+    var comboEl = document.getElementById('combo-indicator');
+    if (comboEl && Game.ComboSystem) {
+      if (Game.ComboSystem.isActive()) {
+        var count = Game.ComboSystem.getCount();
+        var mult = Game.ComboSystem.getMultiplier();
+        comboEl.textContent = '\uD83D\uDCA5 Combo x' + count + ' (+' + Math.round(mult * 100) + '%)';
+        comboEl.style.display = 'block';
+      } else {
+        comboEl.style.display = 'none';
+      }
+    }
   }
 
   // ===== HOME SCREEN =====
@@ -60,6 +81,7 @@ Game.UI = (function () {
     updateStatsPanel();
     updateActionBar();
     updateDogSelector();
+    updateMissionsPanel();
   }
 
   function updateRoom() {
@@ -123,11 +145,22 @@ Game.UI = (function () {
       { key: 'learning', label: 'Aprendizado', icon: '\uD83C\uDFAA' }
     ];
 
+    // XP progress bar
+    var xpHtml = '';
+    if (Game.XPSystem) {
+      var xp = Game.XPSystem.getProgress(dog);
+      xpHtml = '<div class="xp-bar">' +
+        '<span class="xp-bar__label">Nv.' + xp.level + '</span>' +
+        '<div class="xp-bar__track"><div class="xp-bar__fill" style="width:' + xp.percent + '%"></div></div>' +
+        '<span class="xp-bar__text">' + xp.current + '/' + xp.needed + '</span>' +
+      '</div>';
+    }
+
     var html = '<div class="stats-panel__dog-name">' +
       '<span>' + moodEmoji + '</span> ' +
       '<span>' + dog.name + '</span> ' +
       '<span class="stats-panel__mood">(' + moodText + ')</span>' +
-    '</div>';
+    '</div>' + xpHtml;
 
     stats.forEach(function (stat) {
       var value = Math.round(dog.stats[stat.key]);
@@ -570,6 +603,35 @@ Game.UI = (function () {
     }
   }
 
+  // ===== MISSIONS PANEL =====
+  function updateMissionsPanel() {
+    var panel = document.getElementById('missions-panel');
+    if (!panel || !Game.MissionsSystem) return;
+
+    var missions = Game.MissionsSystem.getMissions();
+    if (missions.length === 0) {
+      panel.innerHTML = '';
+      panel.style.display = 'none';
+      return;
+    }
+
+    panel.style.display = 'block';
+    var html = '<div class="missions-header">\uD83C\uDFAF Miss\u00f5es Di\u00e1rias</div>';
+    missions.forEach(function (m) {
+      var percent = Math.min(100, Math.round((m.progress / m.target) * 100));
+      var doneClass = m.completed ? ' mission--done' : '';
+      html += '<div class="mission-item' + doneClass + '">' +
+        '<span class="mission-item__icon">' + (m.completed ? '\u2705' : m.icon) + '</span>' +
+        '<div class="mission-item__info">' +
+          '<div class="mission-item__desc">' + m.description + '</div>' +
+          '<div class="mission-item__bar"><div class="mission-item__fill" style="width:' + percent + '%"></div></div>' +
+        '</div>' +
+        '<span class="mission-item__reward">' + (m.completed ? '\u2705' : '\uD83D\uDC3E' + m.reward) + '</span>' +
+      '</div>';
+    });
+    panel.innerHTML = html;
+  }
+
   // ===== AWAY SUMMARY =====
   function showAwaySummary(offlineData) {
     if (!offlineData) return;
@@ -578,6 +640,8 @@ Game.UI = (function () {
     offlineData.events.forEach(function (evt) {
       if (evt.type === 'runaway') {
         eventsHTML += '<div class="away-screen__event">\uD83D\uDC36 ' + evt.dogName + ' fugiu!</div>';
+      } else if (evt.type === 'random_event') {
+        eventsHTML += '<div class="away-screen__event">' + evt.text + '</div>';
       }
     });
 

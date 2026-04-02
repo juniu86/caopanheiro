@@ -18,6 +18,10 @@ var Game = Game || {};
       Game.SaveManager.setupAutoSave();
       Game.StatsSystem.init();
       Game.RunawaySystem.init();
+      Game.XPSystem.init();
+      Game.ComboSystem.init();
+      Game.RandomEventsSystem.init();
+      Game.MissionsSystem.init();
 
       // Process offline time
       var offlineData = Game.TimeEngine.processOfflineTime();
@@ -31,6 +35,9 @@ var Game = Game || {};
       Game.TimeEngine.start();
       Game.ScreenManager.show('screen-home');
       Game.UI.updateHomeScreen();
+
+      // Check streak (shows notification after delay)
+      Game.StreakSystem.init();
 
       // Show offline summary if significant time passed
       if (offlineData && offlineData.realHours >= 0.1) {
@@ -79,6 +86,10 @@ var Game = Game || {};
       Game.SaveManager.setupAutoSave();
       Game.StatsSystem.init();
       Game.RunawaySystem.init();
+      Game.XPSystem.init();
+      Game.ComboSystem.init();
+      Game.RandomEventsSystem.init();
+      Game.MissionsSystem.init();
       Game.UI.init();
       Game.TimeEngine.start();
 

@@ -86,6 +86,7 @@
           <span id="top-day" class="top-bar__clock">Dia 1</span>
           &middot;
           <span id="top-clock" class="top-bar__clock">08:00</span>
+          <span id="top-streak" style="margin-left:4px;font-size:0.8rem;"></span>
         </div>
         <button class="top-bar__settings" data-nav="housing" title="Moradia">&#x1F3E0;</button>
       </div>
@@ -104,11 +105,17 @@
         <div id="action-scene" class="action-scene"></div>
       </div>
 
+      <!-- Combo Indicator -->
+      <div id="combo-indicator" class="combo-indicator" style="display:none;"></div>
+
       <!-- Stats Panel -->
       <div id="stats-panel" class="stats-panel"></div>
 
       <!-- Action Bar -->
       <div id="action-bar" class="action-bar"></div>
+
+      <!-- Missions Panel -->
+      <div id="missions-panel" class="missions-panel" style="display:none;"></div>
 
       <!-- Navigation -->
       <div class="nav-buttons">
@@ -249,6 +256,11 @@
   <script src="js/systems/shop-system.js"></script>
   <script src="js/systems/progression-system.js"></script>
   <script src="js/systems/runaway-system.js"></script>
+  <script src="js/systems/xp-system.js"></script>
+  <script src="js/systems/streak-system.js"></script>
+  <script src="js/systems/combo-system.js"></script>
+  <script src="js/systems/random-events-system.js"></script>
+  <script src="js/systems/missions-system.js"></script>
 
   <!-- UI -->
   <script src="js/ui/svg-dogs.js"></script>

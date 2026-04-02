@@ -422,3 +422,120 @@
 .nav-btn--active {
   color: var(--color-primary);
 }
+
+/* ===== XP BAR ===== */
+.xp-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--space-xs);
+  font-size: 0.75rem;
+}
+
+.xp-bar__label {
+  font-weight: 800;
+  color: var(--stat-learning, #A29BFE);
+  min-width: 32px;
+}
+
+.xp-bar__track {
+  flex: 1;
+  height: 8px;
+  background: #E8E8E8;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.xp-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #A29BFE, #6C5CE7);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.xp-bar__text {
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+  min-width: 45px;
+  text-align: right;
+}
+
+/* ===== COMBO INDICATOR ===== */
+.combo-indicator {
+  text-align: center;
+  padding: 4px 8px;
+  background: linear-gradient(90deg, #FF6B6B, #FFE66D);
+  color: white;
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  animation: combo-pulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes combo-pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.03); }
+}
+
+/* ===== MISSIONS PANEL ===== */
+.missions-panel {
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-card);
+  border-top: 1px solid #EEE;
+}
+
+.missions-header {
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+  color: var(--color-primary);
+}
+
+.mission-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 0.75rem;
+}
+
+.mission-item--done {
+  opacity: 0.6;
+}
+
+.mission-item__icon {
+  font-size: 0.9rem;
+  width: 20px;
+  text-align: center;
+}
+
+.mission-item__info {
+  flex: 1;
+}
+
+.mission-item__desc {
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.mission-item__bar {
+  height: 5px;
+  background: #E8E8E8;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.mission-item__fill {
+  height: 100%;
+  background: var(--color-secondary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.mission-item__reward {
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: var(--color-primary);
+  white-space: nowrap;
+}

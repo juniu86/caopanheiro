@@ -23,6 +23,8 @@ Game.Dog = (function () {
       isAsleep: false,
       neglectCounter: 0,
       hasRunAway: false,
+      xp: 0,
+      level: 1,
       lastActions: {},   // { actionId: gameMinuteTimestamp } for cooldowns
       poopOnFloor: false,
       actionAnimation: null

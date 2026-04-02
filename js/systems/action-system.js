@@ -160,6 +160,14 @@ Game.ActionSystem = (function () {
     // Mark cooldown
     Game.Dog.markActionDone(dog, actionId);
 
+    // Base action coin reward (3-5 random) with combo multiplier
+    var baseReward = Math.floor(Math.random() * 3) + 3;
+    var comboMult = Game.ComboSystem ? Game.ComboSystem.getMultiplier() : 0;
+    var totalReward = Math.round(baseReward * (1 + comboMult));
+    if (totalReward > 0) {
+      Game.Player.addCoins(totalReward, comboMult > 0 ? 'A\u00e7\u00e3o (combo x' + (Game.ComboSystem.getCount()) + ')' : 'A\u00e7\u00e3o');
+    }
+
     // Daily bonus
     if (!Game.State.player.dailyBonusClaimed) {
       Game.State.player.dailyBonusClaimed = true;
