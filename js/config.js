@@ -28,6 +28,17 @@ Game.Config = {
   // Energy recovery while sleeping per game-hour
   SLEEP_ENERGY_RECOVERY: 5,
 
+  // Day/Night cycle multipliers for energy recovery/decay
+  // Day = 6h-20h game time, Night = 20h-6h
+  DAY_START_HOUR: 6,
+  DAY_END_HOUR: 20,
+  TIME_MULTIPLIERS: {
+    day_awake: 1.25,     // +25% energy recovery speed during day awake
+    day_sleeping: 2.30,  // +130% energy recovery speed during day sleeping
+    night_awake: 0.70,   // -30% energy recovery speed at night awake
+    night_sleeping: 0.34 // -66% energy recovery speed at night sleeping
+  },
+
   // Stat limits
   STAT_MIN: 0,
   STAT_MAX: 100,
