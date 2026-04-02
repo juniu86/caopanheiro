@@ -111,8 +111,7 @@ Game.TimeEngine = (function () {
   }
 
   function isDaytime() {
-    if (!Game.State) return true;
-    var hour = Game.State.gameTime.hour;
+    var hour = new Date().getHours(); // real-world clock
     return hour >= Game.Config.DAY_START_HOUR && hour < Game.Config.DAY_END_HOUR;
   }
 
