@@ -268,18 +268,28 @@
 
 .room__bowl {
   position: absolute;
-  bottom: 6%;
-  right: 12%;
-  font-size: 2.5rem;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
+  bottom: 5%;
+  right: 10%;
+  width: 55px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.room__bowl svg {
+  width: 100%;
+  height: auto;
 }
 
 .room__bed {
   position: absolute;
-  bottom: 4%;
-  left: 8%;
-  font-size: 2.8rem;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
+  bottom: 3%;
+  left: 6%;
+  width: 75px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.room__bed svg {
+  width: 100%;
+  height: auto;
 }
 
 /* Stat panel on home screen */
