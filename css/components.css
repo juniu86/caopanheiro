@@ -391,7 +391,7 @@
   color: var(--color-primary);
 }
 
-/* Navigation buttons row */
+/* Navigation buttons row — always visible at bottom */
 .nav-buttons {
   display: flex;
   gap: var(--space-sm);
@@ -399,6 +399,9 @@
   background: var(--bg-card);
   border-top: 1px solid #EEE;
   flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .nav-btn {
@@ -676,4 +679,136 @@
 .minigame__btn:active {
   transform: scale(0.9);
   background: var(--color-primary);
+}
+
+/* ==========================================================
+   MOBILE RESPONSIVE
+   ========================================================== */
+
+@media (max-height: 667px) {
+  .modal {
+    max-height: 88vh;
+    max-height: 88dvh;
+    padding: var(--space-md);
+  }
+
+  .stat-bar {
+    margin-bottom: 1px;
+  }
+
+  .stat-bar__track {
+    height: 8px;
+  }
+
+  .stat-bar__icon {
+    font-size: 0.75rem;
+    width: 16px;
+  }
+
+  .stat-bar__value {
+    font-size: 0.7rem;
+    min-width: 22px;
+  }
+
+  .action-btn {
+    padding: 4px 1px;
+  }
+
+  .action-btn__icon {
+    font-size: 1.1rem;
+  }
+
+  .action-btn__label {
+    font-size: 0.55rem;
+  }
+
+  .missions-panel {
+    padding: 2px var(--space-xs);
+  }
+
+  .mission-item {
+    padding: 2px 0;
+    font-size: 0.7rem;
+  }
+
+  .mission-item__bar {
+    height: 4px;
+  }
+
+  .xp-bar {
+    margin-bottom: 1px;
+    font-size: 0.7rem;
+  }
+
+  .xp-bar__track {
+    height: 6px;
+  }
+
+  .combo-indicator {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+  }
+
+  .dog-selector {
+    padding: var(--space-xs);
+    gap: var(--space-xs);
+  }
+
+  .dog-selector__btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-height: 568px) {
+  /* Very short screens (iPhone SE 1st gen, small Android) */
+  .modal {
+    max-height: 92vh;
+    max-height: 92dvh;
+    padding: var(--space-sm);
+  }
+
+  .stat-bar__track {
+    height: 6px;
+  }
+
+  .action-btn__icon {
+    font-size: 1rem;
+  }
+
+  .action-btn__label {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .modal {
+    max-width: 95%;
+    padding: var(--space-sm);
+  }
+
+  .btn {
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .btn--large {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--font-size-md);
+  }
+
+  .breed-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .breed-card {
+    padding: var(--space-sm);
+  }
+
+  .shop-item {
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
 }

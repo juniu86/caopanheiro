@@ -148,6 +148,11 @@
   display: flex;
   gap: var(--space-sm);
   margin-top: var(--space-md);
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-card);
+  padding: var(--space-sm) 0;
+  z-index: 1;
 }
 
 .breed-detail__buttons .btn {
@@ -172,15 +177,16 @@
 /* Home Screen */
 .home-screen {
   background: var(--bg-main);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .home-screen__room {
-  flex: 1;
+  flex: 1 1 auto;
   position: relative;
   overflow: hidden;
-  min-height: 160px;
-  max-height: 280px;
+  min-height: 120px;
+  max-height: 35vh;
 }
 
 /* Action animation overlay */
@@ -439,4 +445,102 @@
 
 .away-screen__event:last-child {
   border-bottom: none;
+}
+
+/* ==========================================================
+   MOBILE RESPONSIVE — SCREENS
+   ========================================================== */
+
+@media (max-height: 667px) {
+  .home-screen__room {
+    min-height: 100px;
+    max-height: 28vh;
+  }
+
+  .stats-panel {
+    padding: 2px var(--space-sm) 1px;
+  }
+
+  .stats-panel__dog-name {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  .stats-panel__mood {
+    font-size: 0.7rem;
+  }
+
+  .breed-detail__sprite {
+    min-height: 60px;
+    margin: var(--space-xs) 0;
+  }
+
+  .breed-detail__name {
+    font-size: var(--font-size-lg);
+  }
+
+  .breed-detail__stats {
+    margin: var(--space-sm) 0;
+  }
+
+  .breed-detail__trick {
+    margin: var(--space-sm) 0;
+    padding: var(--space-xs);
+  }
+
+  .housing-screen__current {
+    padding: var(--space-md);
+  }
+
+  .housing-screen__icon {
+    font-size: 3rem;
+  }
+
+  .housing-screen__next {
+    padding: var(--space-md);
+    margin: var(--space-sm);
+  }
+}
+
+@media (max-height: 568px) {
+  .home-screen__room {
+    min-height: 80px;
+    max-height: 22vh;
+  }
+
+  .breed-detail__sprite {
+    min-height: 50px;
+  }
+
+  .breed-detail__personality {
+    margin: 1px 0;
+  }
+
+  .breed-detail__difficulty {
+    margin: var(--space-xs) 0;
+    padding: 1px var(--space-xs);
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .shelter-screen__header {
+    padding: var(--space-sm);
+  }
+
+  .shelter-screen__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .shop-screen__header {
+    padding: var(--space-sm);
+  }
+
+  .shop-screen__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .breed-detail {
+    max-width: 280px;
+  }
 }
