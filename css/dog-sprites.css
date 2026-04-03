@@ -15,7 +15,6 @@
   user-select: none;
   -webkit-user-drag: none;
   transform-origin: bottom center;
-  border-radius: 8px;
 }
 
 /* Fallback SVG container */

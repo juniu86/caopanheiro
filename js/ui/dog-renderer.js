@@ -2,6 +2,44 @@ var Game = Game || {};
 
 Game.DogRenderer = (function () {
   var currentActionScene = null;
+  var transparencyCache = {}; // cache processed data URLs by src
+
+  // ===== REMOVE WHITE BACKGROUND VIA CANVAS =====
+  function removeWhiteBackground(imgEl) {
+    var src = imgEl.src;
+    if (transparencyCache[src]) {
+      imgEl.src = transparencyCache[src];
+      return;
+    }
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    var w = imgEl.naturalWidth || imgEl.width;
+    var h = imgEl.naturalHeight || imgEl.height;
+    if (!w || !h) return;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.drawImage(imgEl, 0, 0, w, h);
+    try {
+      var imageData = ctx.getImageData(0, 0, w, h);
+      var d = imageData.data;
+      var threshold = 235; // pixels with R,G,B all above this → transparent
+      for (var i = 0; i < d.length; i += 4) {
+        if (d[i] > threshold && d[i + 1] > threshold && d[i + 2] > threshold) {
+          d[i + 3] = 0; // set alpha to 0
+        } else if (d[i] > 210 && d[i + 1] > 210 && d[i + 2] > 210) {
+          // Near-white: fade alpha proportionally for smooth edges
+          var maxC = Math.max(d[i], d[i + 1], d[i + 2]);
+          d[i + 3] = Math.round(255 * (1 - (maxC - 210) / (255 - 210)));
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+      var dataUrl = canvas.toDataURL('image/png');
+      transparencyCache[src] = dataUrl;
+      imgEl.src = dataUrl;
+    } catch (e) {
+      // CORS or security error — leave image as-is
+    }
+  }
 
   // ===== BREED ID → PNG FILE PREFIX MAPPING =====
   var BREED_TO_PNG = {
@@ -102,6 +140,7 @@ Game.DogRenderer = (function () {
     return '<div class="dog-sprite-png ' + sizeClass + ' ' + moodClass + '">' +
       '<img src="' + imgSrc + '" alt="' + (breed.name || '') + '" ' +
         'draggable="false" ' +
+        'onload="Game.DogRenderer._onImgLoad(this);" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
       '<div class="dog-sprite-png__fallback" style="display:none;">' + svgFallbackHtml + '</div>' +
       extras +
@@ -161,6 +200,7 @@ Game.DogRenderer = (function () {
     return '<div class="dog-sprite-png dog-sprite-png--preview">' +
       '<img src="' + imgSrc + '" alt="" draggable="false" ' +
         'style="width:90px;height:90px;object-fit:contain;" ' +
+        'onload="Game.DogRenderer._onImgLoad(this);" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
       '<div class="dog-sprite-png__fallback" style="display:none;">' + svgFallbackHtml + '</div>' +
     '</div>';
@@ -247,6 +287,11 @@ Game.DogRenderer = (function () {
     renderBreedPreview: renderBreedPreview,
     playActionScene: playActionScene,
     showOwner: showOwner,
-    hideOwner: hideOwner
+    hideOwner: hideOwner,
+    _onImgLoad: function (img) {
+      // Skip if already processed (data URL)
+      if (img.src.indexOf('data:') === 0) return;
+      removeWhiteBackground(img);
+    }
   };
 })();
