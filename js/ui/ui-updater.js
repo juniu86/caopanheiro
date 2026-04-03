@@ -93,8 +93,8 @@ Game.UI = (function () {
 
       // Update room furniture
       var floorHTML = '<div class="room__floor"></div>';
-      var bowlHTML = '<div class="room__bowl">\uD83C\uDF7D\uFE0F</div>';
-      var bedHTML = '<div class="room__bed">\uD83D\uDECF\uFE0F</div>';
+      var bowlHTML = '<div class="room__bowl">\uD83E\uDD63</div>';
+      var bedHTML = '<div class="room__bed">\uD83D\uDC3E</div>';
 
       // Check if poop on floor
       var poopHTML = '';

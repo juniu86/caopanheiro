@@ -41,7 +41,7 @@ Game.DogRenderer = (function () {
   // ===== getDogMood: determines PNG mood from dog stats =====
   function getDogMood(dog) {
     var s = dog.stats;
-    if (s.energy < 20 || dog.isAsleep) return 'dormindo';
+    if (dog.isAsleep) return 'dormindo';
     if (s.health < 25) return 'doente';
     if (s.hunger < 25) return 'com_fome';
     var avg = (s.hunger + s.happiness + s.energy + s.hygiene + s.health) / 5;

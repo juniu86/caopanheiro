@@ -141,6 +141,16 @@ Game.ActionSystem = (function () {
       });
     }
 
+    // Force sleep if energy depleted by action
+    if (dog.stats.energy <= 0 && !dog.isAsleep) {
+      dog.isAsleep = true;
+      Game.EventBus.emit('dog:sleep', { dogId: dog.id });
+      Game.EventBus.emit('notification', {
+        text: dog.name + ' desmaiou de cansa\u00e7o!',
+        type: 'warning'
+      });
+    }
+
     // Custom logic
     if (action.custom) {
       action.custom(dog);
