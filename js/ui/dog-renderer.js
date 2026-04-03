@@ -130,8 +130,23 @@ Game.DogRenderer = (function () {
         Game.EventBus.emit('dog:selected', { dogId: dog.id });
       });
 
-      var positions = [35, 60, 15, 75];
-      wrapper.style.left = positions[index % 4] + '%';
+      // Position dog based on state
+      if (dog.isAsleep) {
+        // Sleeping: on the bed (left side)
+        wrapper.style.left = '5%';
+        wrapper.style.bottom = '10%';
+        wrapper.classList.add('dog-in-room--on-bed');
+      } else if (dog.actionAnimation === 'eating') {
+        // Eating: at the bowl (right side)
+        wrapper.style.left = 'auto';
+        wrapper.style.right = '8%';
+        wrapper.style.bottom = '12%';
+        wrapper.classList.add('dog-in-room--at-bowl');
+      } else {
+        // Default positions in the room
+        var positions = [30, 55, 15, 70];
+        wrapper.style.left = positions[index % 4] + '%';
+      }
 
       roomEl.appendChild(wrapper);
     });

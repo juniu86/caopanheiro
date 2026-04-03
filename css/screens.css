@@ -269,9 +269,10 @@
 .room__bowl {
   position: absolute;
   bottom: 5%;
-  right: 10%;
+  right: 8%;
   width: 55px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
 
 .room__bowl svg {
@@ -282,14 +283,27 @@
 .room__bed {
   position: absolute;
   bottom: 3%;
-  left: 6%;
-  width: 75px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  left: 5%;
+  width: 80px;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
 
 .room__bed svg {
   width: 100%;
   height: auto;
+}
+
+/* Dog positioned on bed (sleeping) */
+.dog-in-room--on-bed {
+  z-index: 2;
+  transform-origin: bottom center;
+}
+
+/* Dog positioned at bowl (eating) */
+.dog-in-room--at-bowl {
+  z-index: 2;
+  transform-origin: bottom center;
 }
 
 /* Stat panel on home screen */

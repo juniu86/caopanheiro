@@ -84,56 +84,56 @@ Game.UI = (function () {
     updateMissionsPanel();
   }
 
+  // SVG furniture drawings
+  var BOWL_SVG = '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">' +
+    '<ellipse cx="30" cy="32" rx="28" ry="8" fill="#C0C0C0"/>' +
+    '<path d="M4,24 Q4,32 30,32 Q56,32 56,24 L56,20 Q56,12 30,12 Q4,12 4,20 Z" fill="#E8E8E8"/>' +
+    '<path d="M4,20 Q4,12 30,12 Q56,12 56,20 Q56,28 30,28 Q4,28 4,20" fill="#D4D4D4"/>' +
+    '<ellipse cx="30" cy="20" rx="26" ry="8" fill="#F0F0F0"/>' +
+    '<circle cx="20" cy="19" r="3" fill="#8B6914"/><circle cx="30" cy="17" r="3.5" fill="#A0782C"/>' +
+    '<circle cx="38" cy="19" r="3" fill="#8B6914"/><circle cx="25" cy="22" r="2.5" fill="#A0782C"/>' +
+    '<circle cx="34" cy="21" r="2.8" fill="#8B6914"/>' +
+    '<ellipse cx="30" cy="20" rx="26" ry="8" fill="none" stroke="#B0B0B0" stroke-width="0.8"/>' +
+  '</svg>';
+
+  var BED_SVG = '<svg viewBox="0 0 80 45" xmlns="http://www.w3.org/2000/svg">' +
+    '<ellipse cx="40" cy="38" rx="38" ry="7" fill="rgba(0,0,0,0.08)"/>' +
+    '<path d="M5,35 Q5,20 40,18 Q75,20 75,35 Z" fill="#E8A87C"/>' +
+    '<path d="M5,35 Q5,20 40,18 Q75,20 75,35 Q75,40 40,42 Q5,40 5,35" fill="#F0C4A0"/>' +
+    '<path d="M8,33 Q8,22 40,20 Q72,22 72,33 Q72,36 40,38 Q8,36 8,33" fill="#F5D5B8"/>' +
+    '<ellipse cx="18" cy="26" rx="12" ry="8" fill="#E8A87C" opacity="0.7"/>' +
+    '<path d="M10,28 Q10,18 22,18 Q30,18 28,26" fill="#F0C4A0"/>' +
+  '</svg>';
+
   function updateRoom() {
     var roomEl = document.getElementById('game-room');
-    if (roomEl) {
-      // Update background class
-      var housing = Game.Player.getCurrentHousing();
-      roomEl.className = 'home-screen__room ' + housing.bgClass;
+    if (!roomEl || !Game.State) return;
 
-      // Update room furniture
-      var floorHTML = '<div class="room__floor"></div>';
-      var bowlHTML = '<div class="room__bowl">' +
-        '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">' +
-          '<ellipse cx="30" cy="32" rx="28" ry="8" fill="#C0C0C0"/>' +
-          '<path d="M4,24 Q4,32 30,32 Q56,32 56,24 L56,20 Q56,12 30,12 Q4,12 4,20 Z" fill="#E8E8E8"/>' +
-          '<path d="M4,20 Q4,12 30,12 Q56,12 56,20 Q56,28 30,28 Q4,28 4,20" fill="#D4D4D4"/>' +
-          '<ellipse cx="30" cy="20" rx="26" ry="8" fill="#F0F0F0"/>' +
-          '<circle cx="20" cy="19" r="3" fill="#8B6914"/>' +
-          '<circle cx="30" cy="17" r="3.5" fill="#A0782C"/>' +
-          '<circle cx="38" cy="19" r="3" fill="#8B6914"/>' +
-          '<circle cx="25" cy="22" r="2.5" fill="#A0782C"/>' +
-          '<circle cx="34" cy="21" r="2.8" fill="#8B6914"/>' +
-          '<ellipse cx="30" cy="20" rx="26" ry="8" fill="none" stroke="#B0B0B0" stroke-width="0.8"/>' +
-        '</svg>' +
-      '</div>';
-      var bedHTML = '<div class="room__bed">' +
-        '<svg viewBox="0 0 80 45" xmlns="http://www.w3.org/2000/svg">' +
-          '<ellipse cx="40" cy="38" rx="38" ry="7" fill="rgba(0,0,0,0.08)"/>' +
-          '<path d="M5,35 Q5,20 40,18 Q75,20 75,35 Z" fill="#E8A87C"/>' +
-          '<path d="M5,35 Q5,20 40,18 Q75,20 75,35 Q75,40 40,42 Q5,40 5,35" fill="#F0C4A0"/>' +
-          '<path d="M8,33 Q8,22 40,20 Q72,22 72,33 Q72,36 40,38 Q8,36 8,33" fill="#F5D5B8"/>' +
-          '<ellipse cx="18" cy="26" rx="12" ry="8" fill="#E8A87C" opacity="0.7"/>' +
-          '<path d="M10,28 Q10,18 22,18 Q30,18 28,26" fill="#F0C4A0"/>' +
-          '<circle cx="16" cy="24" r="1" fill="#D4956A"/>' +
-          '<circle cx="20" cy="22" r="0.8" fill="#D4956A"/>' +
-        '</svg>' +
-      '</div>';
+    // Update background
+    var housing = Game.Player.getCurrentHousing();
+    roomEl.className = 'home-screen__room ' + housing.bgClass;
 
-      // Check if poop on floor
-      var poopHTML = '';
-      if (Game.State.dogs.some(function (d) { return d.poopOnFloor; })) {
-        poopHTML = '<div style="position:absolute;bottom:12%;left:50%;font-size:1.5rem;">\uD83D\uDCA9</div>';
-      }
+    // Always rebuild room content
+    var html = '<div class="room__floor"></div>';
+    html += '<div class="room__bed">' + BED_SVG + '</div>';
+    html += '<div class="room__bowl">' + BOWL_SVG + '</div>';
 
-      // Keep only structural elements, re-render dogs
-      var structEls = roomEl.querySelectorAll('.room__floor, .room__bowl, .room__bed');
-      if (structEls.length === 0) {
-        roomEl.innerHTML = floorHTML + bowlHTML + bedHTML + poopHTML;
-      }
-
-      Game.DogRenderer.renderDogsInRoom(roomEl);
+    // Poop
+    if (Game.State.dogs.some(function (d) { return d.poopOnFloor; })) {
+      html += '<div style="position:absolute;bottom:12%;left:50%;font-size:1.5rem;">\uD83D\uDCA9</div>';
     }
+
+    // Speech bubble
+    html += '<div id="speech-bubble" class="speech-bubble"></div>';
+
+    // Owner + action scene
+    html += '<div id="owner-sprite" class="owner-sprite owner-sprite--hidden"></div>';
+    html += '<div id="action-scene" class="action-scene"></div>';
+
+    roomEl.innerHTML = html;
+
+    // Render dogs with positional awareness
+    Game.DogRenderer.renderDogsInRoom(roomEl);
   }
 
   function getSelectedDog() {
