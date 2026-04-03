@@ -15,8 +15,7 @@
   user-select: none;
   -webkit-user-drag: none;
   transform-origin: bottom center;
-  mix-blend-mode: multiply;
-  background: transparent;
+  border-radius: 8px;
 }
 
 /* Fallback SVG container */

@@ -132,15 +132,16 @@ Game.DogRenderer = (function () {
 
       // Position dog based on state
       if (dog.isAsleep) {
-        // Sleeping: on the bed (left side)
-        wrapper.style.left = '5%';
-        wrapper.style.bottom = '10%';
+        // Sleeping: on/near the bed (left side), staggered per dog
+        var bedOffsets = [3, 20, 10, 28];
+        wrapper.style.left = bedOffsets[index % 4] + '%';
+        wrapper.style.bottom = '8%';
         wrapper.classList.add('dog-in-room--on-bed');
       } else if (dog.actionAnimation === 'eating') {
-        // Eating: at the bowl (right side)
-        wrapper.style.left = 'auto';
-        wrapper.style.right = '8%';
-        wrapper.style.bottom = '12%';
+        // Eating: near the bowl (right side), staggered
+        var bowlOffsets = [62, 72, 58, 68];
+        wrapper.style.left = bowlOffsets[index % 4] + '%';
+        wrapper.style.bottom = '10%';
         wrapper.classList.add('dog-in-room--at-bowl');
       } else {
         // Default positions in the room

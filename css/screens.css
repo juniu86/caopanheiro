@@ -268,9 +268,9 @@
 
 .room__bowl {
   position: absolute;
-  bottom: 5%;
-  right: 8%;
-  width: 55px;
+  bottom: 2%;
+  right: 6%;
+  width: 80px;
   z-index: 1;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
@@ -282,9 +282,9 @@
 
 .room__bed {
   position: absolute;
-  bottom: 3%;
-  left: 5%;
-  width: 80px;
+  bottom: 1%;
+  left: 3%;
+  width: 130px;
   z-index: 1;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
