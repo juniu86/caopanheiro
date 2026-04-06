@@ -105,6 +105,25 @@ Game.UI = (function () {
     '<path d="M10,28 Q10,18 22,18 Q30,18 28,26" fill="#F0C4A0"/>' +
   '</svg>';
 
+  // Tier-aware room decorations. Each tier inherits the previous tier's decor.
+  function getDecorationsHtml(housingId) {
+    var html = '';
+    if (housingId >= 1) {
+      html += '<div class="room__window"></div>';
+      html += '<div class="room__plant">\uD83E\uDEB4</div>';
+    }
+    if (housingId >= 2) {
+      html += '<div class="room__rug"></div>';
+      html += '<div class="room__painting"></div>';
+    }
+    if (housingId >= 3) {
+      html += '<div class="room__clock">\uD83D\uDD70\uFE0F</div>';
+      html += '<div class="room__shelf"></div>';
+      html += '<div class="room__fireplace"></div>';
+    }
+    return html;
+  }
+
   function updateRoom() {
     var roomEl = document.getElementById('game-room');
     if (!roomEl || !Game.State) return;
@@ -115,6 +134,7 @@ Game.UI = (function () {
 
     // Always rebuild room content
     var html = '<div class="room__floor"></div>';
+    html += '<div class="room__decor-back">' + getDecorationsHtml(housing.id) + '</div>';
     html += '<div class="room__bed">' + BED_SVG + '</div>';
     html += '<div class="room__bowl">' + BOWL_SVG + '</div>';
 

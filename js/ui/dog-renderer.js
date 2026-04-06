@@ -5,6 +5,9 @@ Game.DogRenderer = (function () {
   var transparencyCache = {}; // cache processed data URLs by src
 
   // ===== REMOVE WHITE BACKGROUND VIA CANVAS =====
+  // Detects and removes both pure-white backgrounds AND the photoshop
+  // transparency-checker pattern (alternating white + ~#CCCCCC gray) that some
+  // exported PNGs accidentally bake into pixel data.
   function removeWhiteBackground(imgEl) {
     var src = imgEl.src;
     if (transparencyCache[src]) {
@@ -22,16 +25,77 @@ Game.DogRenderer = (function () {
     try {
       var imageData = ctx.getImageData(0, 0, w, h);
       var d = imageData.data;
-      var threshold = 235; // pixels with R,G,B all above this → transparent
+
+      // ----- Detect photoshop checker by sampling 4x4 patches in each corner.
+      // Only enable checker-removal if at least one corner contains BOTH
+      // pure white AND a near-grayscale pixel in the ~#CCCCCC band.
+      function cornerHasChecker(x0, y0) {
+        var hasWhite = false;
+        var hasCheckerGray = false;
+        for (var dy = 0; dy < 4; dy++) {
+          for (var dx = 0; dx < 4; dx++) {
+            var idx = ((y0 + dy) * w + (x0 + dx)) * 4;
+            var r = d[idx], g = d[idx + 1], b = d[idx + 2];
+            if (r > 235 && g > 235 && b > 235) hasWhite = true;
+            if (Math.abs(r - g) <= 4 && Math.abs(g - b) <= 4 && r >= 195 && r <= 215) {
+              hasCheckerGray = true;
+            }
+          }
+        }
+        return hasWhite && hasCheckerGray;
+      }
+      var isCheckerImage =
+        cornerHasChecker(0, 0) ||
+        cornerHasChecker(w - 4, 0) ||
+        cornerHasChecker(0, h - 4) ||
+        cornerHasChecker(w - 4, h - 4);
+
+      // ----- Pass 1: white removal (always) + checker gray removal (conditional)
       for (var i = 0; i < d.length; i += 4) {
-        if (d[i] > threshold && d[i + 1] > threshold && d[i + 2] > threshold) {
-          d[i + 3] = 0; // set alpha to 0
-        } else if (d[i] > 210 && d[i + 1] > 210 && d[i + 2] > 210) {
-          // Near-white: fade alpha proportionally for smooth edges
-          var maxC = Math.max(d[i], d[i + 1], d[i + 2]);
+        var pr = d[i], pg = d[i + 1], pb = d[i + 2];
+        if (pr > 235 && pg > 235 && pb > 235) {
+          d[i + 3] = 0;
+          continue;
+        }
+        if (pr > 210 && pg > 210 && pb > 210) {
+          var maxC = Math.max(pr, pg, pb);
           d[i + 3] = Math.round(255 * (1 - (maxC - 210) / (255 - 210)));
+          continue;
+        }
+        if (isCheckerImage) {
+          var minC = Math.min(pr, pg, pb);
+          var maxC2 = Math.max(pr, pg, pb);
+          var chroma = maxC2 - minC;
+          // Strict grayscale in checker-gray band (real fur has tint → chroma > 6)
+          if (chroma <= 6 && pr >= 190 && pr <= 220) {
+            d[i + 3] = 0;
+          }
         }
       }
+
+      // ----- Pass 2: edge softening — fade near-checker pixels touching transparency
+      if (isCheckerImage) {
+        var orig = new Uint8ClampedArray(d); // snapshot for neighbor check
+        for (var y = 0; y < h; y++) {
+          for (var x = 0; x < w; x++) {
+            var p = (y * w + x) * 4;
+            if (orig[p + 3] === 0) continue;
+            var r2 = orig[p], g2 = orig[p + 1], b2 = orig[p + 2];
+            var ch2 = Math.max(r2, g2, b2) - Math.min(r2, g2, b2);
+            if (ch2 > 8 || r2 < 175 || r2 > 230) continue;
+            // Check 4-connectivity for transparent neighbor
+            var hasTransparentNeighbor = false;
+            if (x > 0     && orig[p - 4 + 3] === 0) hasTransparentNeighbor = true;
+            else if (x < w - 1 && orig[p + 4 + 3] === 0) hasTransparentNeighbor = true;
+            else if (y > 0     && orig[p - w * 4 + 3] === 0) hasTransparentNeighbor = true;
+            else if (y < h - 1 && orig[p + w * 4 + 3] === 0) hasTransparentNeighbor = true;
+            if (hasTransparentNeighbor) {
+              d[p + 3] = Math.round(d[p + 3] * 0.4);
+            }
+          }
+        }
+      }
+
       ctx.putImageData(imageData, 0, 0);
       var dataUrl = canvas.toDataURL('image/png');
       transparencyCache[src] = dataUrl;
@@ -148,6 +212,8 @@ Game.DogRenderer = (function () {
   }
 
   // ===== RENDER DOGS IN ROOM =====
+  // Distributes dogs evenly across the room (or near bed/bowl when sleeping/eating).
+  // Applies a crowd class so CSS can scale sprites down when 3+ dogs are present.
   function renderDogsInRoom(roomEl) {
     if (!roomEl || !Game.State) return;
     var existing = roomEl.querySelectorAll('.dog-in-room');
@@ -156,39 +222,58 @@ Game.DogRenderer = (function () {
     var selectedDog = Game.UI && Game.UI.getSelectedDog ? Game.UI.getSelectedDog() : null;
     var selectedDogId = selectedDog ? selectedDog.id : null;
 
-    Game.State.dogs.forEach(function (dog, index) {
-      if (dog.hasRunAway) return;
+    var dogs = Game.State.dogs.filter(function (d) { return !d.hasRunAway; });
+
+    // Apply crowd class so CSS can scale sprites for 3+ dogs
+    roomEl.classList.remove('room--crowd-1', 'room--crowd-2', 'room--crowd-3', 'room--crowd-4');
+    if (dogs.length > 0) {
+      roomEl.classList.add('room--crowd-' + Math.min(4, dogs.length));
+    }
+
+    var idleDogs = dogs.filter(function (d) {
+      return !d.isAsleep && d.actionAnimation !== 'eating';
+    });
+    var sleepingDogs = dogs.filter(function (d) { return d.isAsleep; });
+    var eatingDogs = dogs.filter(function (d) { return d.actionAnimation === 'eating'; });
+
+    // Idle dogs: evenly spaced across the band 18%–82% (reserves room for bed/bowl)
+    function getIdleSlot(idx, count) {
+      if (count <= 1) return 50;
+      return 18 + idx * (64 / (count - 1));
+    }
+
+    var sleepLefts = [4, 11, 6, 13];
+    var sleepBottoms = [6, 10, 14, 8];
+    var eatLefts = [62, 70, 66, 74];
+    var eatBottoms = [10, 14, 8, 12];
+
+    function placeDog(dog, leftPct, bottomPct, modifier) {
       var wrapper = document.createElement('div');
       wrapper.className = 'dog-in-room';
       if (dog.id === selectedDogId) {
         wrapper.classList.add('dog-in-room--selected');
+      }
+      if (modifier) {
+        wrapper.classList.add('dog-in-room--' + modifier);
       }
       wrapper.innerHTML = renderDogSprite(dog);
       wrapper.setAttribute('data-dog-id', dog.id);
       wrapper.addEventListener('click', function () {
         Game.EventBus.emit('dog:selected', { dogId: dog.id });
       });
-
-      // Position dog based on state
-      if (dog.isAsleep) {
-        // Sleeping: on/near the bed (left side), staggered per dog
-        var bedOffsets = [3, 20, 10, 28];
-        wrapper.style.left = bedOffsets[index % 4] + '%';
-        wrapper.style.bottom = '8%';
-        wrapper.classList.add('dog-in-room--on-bed');
-      } else if (dog.actionAnimation === 'eating') {
-        // Eating: near the bowl (right side), staggered
-        var bowlOffsets = [62, 72, 58, 68];
-        wrapper.style.left = bowlOffsets[index % 4] + '%';
-        wrapper.style.bottom = '10%';
-        wrapper.classList.add('dog-in-room--at-bowl');
-      } else {
-        // Default positions in the room
-        var positions = [30, 55, 15, 70];
-        wrapper.style.left = positions[index % 4] + '%';
-      }
-
+      wrapper.style.left = leftPct + '%';
+      wrapper.style.bottom = bottomPct + '%';
       roomEl.appendChild(wrapper);
+    }
+
+    idleDogs.forEach(function (dog, i) {
+      placeDog(dog, getIdleSlot(i, idleDogs.length), 12);
+    });
+    sleepingDogs.forEach(function (dog, i) {
+      placeDog(dog, sleepLefts[i % 4], sleepBottoms[i % 4], 'on-bed');
+    });
+    eatingDogs.forEach(function (dog, i) {
+      placeDog(dog, eatLefts[i % 4], eatBottoms[i % 4], 'at-bowl');
     });
   }
 
