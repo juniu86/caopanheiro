@@ -106,24 +106,32 @@ Game.RoomRenderer = (function () {
 
   // ============================================================
   // renderStaticDecor(housingId) — populates the .room__decor-static
-  // layer with tier-cumulative decoration HTML. In Commit A this
-  // delegates to Game.SvgRoom.legacyDecorations to preserve the
-  // current visual; Commit B replaces this with detailed SVGs.
+  // layer with tier-cumulative detailed SVG decoration HTML.
+  // Falls back to the legacy emoji version if the SVG builder
+  // throws (defensive — never crash the game over decoration).
   // ============================================================
   function renderStaticDecor(housingId) {
     var layer = cache.layerRefs.decor;
     if (!layer) return;
     try {
-      layer.innerHTML = Game.SvgRoom.legacyDecorations(housingId);
+      layer.innerHTML = Game.SvgRoom.buildDecorations(housingId);
     } catch (e) {
-      // Graceful fallback: leave decor empty rather than crash
-      layer.innerHTML = '';
+      try { layer.innerHTML = Game.SvgRoom.legacyDecorations(housingId); }
+      catch (e2) { layer.innerHTML = ''; }
+    }
+    // After rebuilding decor, refresh the sky + clock so the new
+    // window pane and clock hands are immediately accurate.
+    if (Game.State && Game.State.gameTime) {
+      cache.skyKey = null; // force re-render
+      renderSky(Game.State.gameTime.hour, Game.State.weather);
+      renderClockHands(Game.State.gameTime.hour, Game.State.gameTime.minute);
     }
   }
 
   // ============================================================
-  // renderSky(hour, weather) — Commit B will set window-pane
-  // gradient + sun/moon position. Stub in Commit A.
+  // renderSky(hour, weather) — sets the window pane gradient and
+  // sun/moon position via CSS variables. Early-returns when the
+  // sky bucket key is unchanged (max 4 updates per game-day).
   // ============================================================
   function renderSky(hour, weather) {
     var key = Game.SvgRoom.getSkyKey(hour);
@@ -131,15 +139,44 @@ Game.RoomRenderer = (function () {
     if (cache.skyKey === key && cache.weatherKey === weatherKey) return;
     cache.skyKey = key;
     cache.weatherKey = weatherKey;
-    // Commit B implements the actual gradient assignment.
+
+    var info = Game.SvgRoom.getSkyGradient(hour);
+    var pane = cache.layerRefs.decor && cache.layerRefs.decor.querySelector('.room__window-pane');
+    if (pane) {
+      pane.style.fill = 'url(#room-sky-grad)';
+      // Use a CSS variable for the gradient on the parent <div>
+      var win = cache.layerRefs.decor.querySelector('.room__window');
+      if (win) {
+        win.style.setProperty('--sky-gradient', info.gradient);
+      }
+    }
+    // Position sun/moon
+    var sun = cache.layerRefs.decor && cache.layerRefs.decor.querySelector('.room__window-sun');
+    var moon = cache.layerRefs.decor && cache.layerRefs.decor.querySelector('.room__window-moon');
+    if (sun) {
+      sun.setAttribute('cx', info.sun.x);
+      sun.setAttribute('cy', info.sun.y);
+      sun.style.opacity = info.sun.visible ? 1 : 0;
+    }
+    if (moon) {
+      moon.setAttribute('cx', info.moon.x);
+      moon.setAttribute('cy', info.moon.y);
+      moon.style.opacity = info.moon.visible ? 1 : 0;
+    }
   }
 
   // ============================================================
-  // renderClockHands(hour, minute) — Commit B will rotate the
-  // SVG clock hands via CSS vars. Stub in Commit A.
+  // renderClockHands(hour, minute) — rotates the SVG clock hands
+  // by setting --hour-deg / --min-deg on the .room__clock-svg.
+  // Cheap (2 setProperty calls). Only runs when tier ≥ 2.
   // ============================================================
   function renderClockHands(hour, minute) {
-    // Implemented in Commit B once the clock SVG exists.
+    var clock = cache.layerRefs.decor && cache.layerRefs.decor.querySelector('.room__clock-svg');
+    if (!clock) return;
+    var hourDeg = ((hour % 12) + minute / 60) * 30;
+    var minDeg = minute * 6;
+    clock.style.setProperty('--hour-deg', hourDeg + 'deg');
+    clock.style.setProperty('--min-deg', minDeg + 'deg');
   }
 
   // ============================================================

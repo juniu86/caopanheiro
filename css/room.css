@@ -171,6 +171,261 @@
 }
 
 /* ============================================================
+   DETAILED SVG DECORATIONS (Commit B)
+   ============================================================ */
+
+/* ----- Window ----- */
+.room__decor-static .room__window {
+  position: absolute;
+  top: 8%;
+  right: 14%;
+  width: var(--win-w, 60px);
+  height: var(--win-h, 50px);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  pointer-events: none;
+}
+
+.room__window-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__window-pane {
+  fill: var(--sky-fallback, #87CEEB);
+}
+
+/* The actual sky gradient is applied to the parent .room__window
+   via a background and the SVG pane uses fill: transparent. We
+   layer it differently: set background-image on the parent and
+   make the rect transparent. */
+.room__decor-static .room__window {
+  background-image: var(--sky-gradient, linear-gradient(180deg, #87CEEB 0%, #B5DCEF 60%, #E0F0F8 100%));
+  background-clip: padding-box;
+}
+
+.room__window-pane {
+  fill: transparent;
+}
+
+.room__window-sun {
+  fill: #FFE66D;
+  filter: drop-shadow(0 0 4px #FFB037);
+  transition: cx 2s linear, cy 2s linear, opacity 1s ease;
+}
+
+.room__window-moon {
+  fill: #F5F5DC;
+  filter: drop-shadow(0 0 3px #FFFFFF);
+  transition: cx 2s linear, cy 2s linear, opacity 1s ease;
+}
+
+.room__window-cloud {
+  animation: cloud-drift 60s linear infinite;
+}
+.room__window-cloud:nth-of-type(2) {
+  animation-duration: 80s;
+  animation-direction: reverse;
+}
+
+.room__window-curtain-l {
+  transform-origin: 6px 50px;
+  animation: curtain-flutter 6s ease-in-out infinite;
+}
+.room__window-curtain-r {
+  transform-origin: 94px 50px;
+  animation: curtain-flutter 6s ease-in-out infinite reverse;
+}
+
+@keyframes cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(8px); }
+}
+
+@keyframes curtain-flutter {
+  0%, 100% { transform: skewX(0deg); }
+  50%      { transform: skewX(2deg); }
+}
+
+/* ----- Plant ----- */
+.room__decor-static .room__plant {
+  position: absolute;
+  bottom: 38%;
+  left: 36%;
+  width: 36px;
+  height: 48px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+}
+
+.room__plant-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__plant-leaves {
+  transform-origin: 30px 55px;
+  animation: leaf-sway 4s ease-in-out infinite;
+}
+
+@keyframes leaf-sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50%      { transform: rotate(2deg); }
+}
+
+/* ----- Clock ----- */
+.room__decor-static .room__clock {
+  position: absolute;
+  top: 4%;
+  left: 48%;
+  width: 42px;
+  height: 42px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.room__clock-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__clock-svg .hh {
+  transform-origin: 40px 40px;
+  transform: rotate(var(--hour-deg, 0deg));
+  transition: transform 1s linear;
+}
+
+.room__clock-svg .mh {
+  transform-origin: 40px 40px;
+  transform: rotate(var(--min-deg, 0deg));
+  transition: transform 1s linear;
+}
+
+/* ----- Fireplace ----- */
+.room__decor-static .room__fireplace {
+  position: absolute;
+  bottom: 36%;
+  right: 22%;
+  width: var(--fire-w, 56px);
+  height: 64px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.room__fireplace-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__fireplace-flame {
+  transform-origin: 50px 68px;
+  animation: flame-flicker 1.2s ease-in-out infinite;
+}
+
+.room__fireplace-flame path:nth-child(2) {
+  animation: flame-shimmer 0.4s ease-in-out infinite alternate;
+}
+
+.room__fireplace-smoke {
+  animation: smoke-rise 4s linear infinite;
+}
+
+@keyframes flame-flicker {
+  0%, 100% { transform: scaleY(1)   scaleX(1);    }
+  25%      { transform: scaleY(1.1) scaleX(0.96); }
+  50%      { transform: scaleY(0.95) scaleX(1.05);}
+  75%      { transform: scaleY(1.05) scaleX(0.98);}
+}
+
+@keyframes flame-shimmer {
+  0%   { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@keyframes smoke-rise {
+  0%   { transform: translateY(0)    scale(0.5); opacity: 0; }
+  20%  { opacity: 0.6; }
+  100% { transform: translateY(-30px) scale(1.4); opacity: 0; }
+}
+
+/* ----- Lamp ----- */
+.room__decor-static .room__lamp {
+  position: absolute;
+  bottom: 38%;
+  left: 22%;
+  width: 24px;
+  height: 60px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.room__lamp-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.room__lamp-glow {
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.room--night .room__lamp-glow,
+.room--dusk  .room__lamp-glow {
+  opacity: 0.85;
+  animation: lamp-glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes lamp-glow-pulse {
+  0%, 100% { transform: scale(1);    }
+  50%      { transform: scale(1.08); }
+}
+
+/* ----- Shelf ----- */
+.room__decor-static .room__shelf {
+  position: absolute;
+  top: 30%;
+  right: 6%;
+  width: 70px;
+  height: 22px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.room__shelf-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ----- Painting ----- */
+.room__decor-static .room__painting {
+  position: absolute;
+  top: 10%;
+  left: 24%;
+  width: 50px;
+  height: 42px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.room__painting-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ----- Rug ----- */
+.room__decor-static .room__rug {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58%;
+  height: 18px;
+  background: radial-gradient(ellipse, #C44569 0%, #8B3A52 60%, transparent 100%);
+  border-radius: 50%;
+}
+
+/* ============================================================
    REDUCED MOTION
    ============================================================ */
 
@@ -178,4 +433,13 @@
   .particle {
     animation-duration: 0.01s !important;
   }
+  .room__window-cloud,
+  .room__window-curtain-l,
+  .room__window-curtain-r,
+  .room__plant-leaves,
+  .room__fireplace-smoke,
+  .room__lamp-glow {
+    animation: none !important;
+  }
+  /* Keep flame and clock hands — they're functional, not decorative */
 }

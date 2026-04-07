@@ -393,6 +393,8 @@ Game.SvgDogs = (function () {
 
   return {
     generate: generate,
-    generateOwner: generateOwner
+    generateOwner: generateOwner,
+    darken: darken,
+    lighten: lighten
   };
 })();

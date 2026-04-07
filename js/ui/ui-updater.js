@@ -14,6 +14,16 @@ Game.UI = (function () {
       if (Game.ScreenManager.getCurrent() === 'screen-home') {
         updateTopBar();
         updateStatsPanel();
+        // Update analog clock hands when housing tier supports it (≥ 2)
+        if (Game.RoomRenderer && Game.Player) {
+          var housing = Game.Player.getCurrentHousing();
+          if (housing && housing.id >= 2) {
+            Game.RoomRenderer.renderClockHands(
+              Game.State.gameTime.hour,
+              Game.State.gameTime.minute
+            );
+          }
+        }
       }
     });
 
