@@ -119,12 +119,14 @@ Game.RoomRenderer = (function () {
       try { layer.innerHTML = Game.SvgRoom.legacyDecorations(housingId); }
       catch (e2) { layer.innerHTML = ''; }
     }
-    // After rebuilding decor, refresh the sky + clock so the new
-    // window pane and clock hands are immediately accurate.
+    // After rebuilding decor, refresh the sky + clock + trophies
+    // so the new window pane, clock hands, and shelf are accurate.
     if (Game.State && Game.State.gameTime) {
       cache.skyKey = null; // force re-render
+      cache.achievementHash = null; // force re-render
       renderSky(Game.State.gameTime.hour, Game.State.weather);
       renderClockHands(Game.State.gameTime.hour, Game.State.gameTime.minute);
+      renderShelfTrophies();
     }
   }
 
@@ -204,11 +206,40 @@ Game.RoomRenderer = (function () {
   }
 
   // ============================================================
-  // renderShelfTrophies — Commit D implements achievement-driven
-  // trophies on the shelf. Stub for now.
+  // renderShelfTrophies — populates the shelf items <g> with one
+  // trophy SVG per unlocked achievement. First 3 are gold/silver/
+  // bronze cups, the rest are stars.
   // ============================================================
+  var TROPHY_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32'];
   function renderShelfTrophies() {
-    // Implemented in Commit D.
+    if (!Game.State || !Game.State.player) return;
+    var slot = cache.layerRefs.decor && cache.layerRefs.decor.querySelector('.room__shelf-items');
+    if (!slot) return; // shelf not present at this tier
+    var unlocked = Game.State.player.achievements || [];
+    var hash = unlocked.join('|');
+    if (cache.achievementHash === hash) return;
+    cache.achievementHash = hash;
+
+    var html = '';
+    var maxSlots = 6;
+    var n = Math.min(unlocked.length, maxSlots);
+    var startX = 70;
+    var stepX = 5;
+    for (var i = 0; i < n; i++) {
+      var x = startX + i * stepX;
+      if (i < 3) {
+        // Gold/silver/bronze cup
+        var col = TROPHY_COLORS[i];
+        html += '<g class="room__trophy room__trophy--cup" transform="translate(' + x + ',8)">' +
+          '<rect x="0" y="6" width="4" height="2" fill="' + col + '"/>' +
+          '<path d="M-1,0 L5,0 L4,5 L0,5 Z" fill="' + col + '"/>' +
+          '</g>';
+      } else {
+        // Star
+        html += '<text x="' + x + '" y="14" font-size="6" fill="#FFD700">\u2605</text>';
+      }
+    }
+    slot.innerHTML = html;
   }
 
   // ============================================================

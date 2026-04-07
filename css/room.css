@@ -426,6 +426,23 @@
 }
 
 /* ============================================================
+   TROPHIES (Commit D)
+   ============================================================ */
+
+.room__trophy {
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3));
+}
+
+.room__trophy--cup {
+  animation: trophy-gleam 4s ease-in-out infinite;
+}
+
+@keyframes trophy-gleam {
+  0%, 90%, 100% { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3)); }
+  95%           { filter: drop-shadow(0 0 4px #FFFFCC); }
+}
+
+/* ============================================================
    WEATHER (Commit C)
    ============================================================ */
 

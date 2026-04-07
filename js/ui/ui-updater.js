@@ -57,6 +57,12 @@ Game.UI = (function () {
       Game.RoomRenderer.renderShelfTrophies();
     });
 
+    Game.EventBus.on('dog:adopted', function () {
+      // Refresh decor so the painting picks up the new dog portrait
+      var housing = Game.Player && Game.Player.getCurrentHousing();
+      if (housing) Game.RoomRenderer.renderStaticDecor(housing.id);
+    });
+
     // Mount the layered room scaffold once at init.
     var roomEl = document.getElementById('game-room');
     if (roomEl && Game.RoomRenderer) {
