@@ -7,6 +7,7 @@ Game.createDefaultState = function () {
     version: Game.Config.SAVE_VERSION,
     lastTimestamp: Date.now(),
     gameTime: { day: 1, hour: 8, minute: 0 },
+    weather: { type: 'sunny', intensity: 0.5, since: 1 },
     player: {
       name: '',
       pataCoins: 50,

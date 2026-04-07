@@ -30,6 +30,14 @@ Game.SaveManager = (function () {
   }
 
   function migrate(state) {
+    // Defensive default for weather (added post-v2)
+    if (!state.weather) {
+      state.weather = {
+        type: 'sunny',
+        intensity: 0.5,
+        since: (state.gameTime && state.gameTime.day) || 1
+      };
+    }
     if (state.version < 2) {
       // v1 → v2: Add engagement features fields
       var p = state.player;

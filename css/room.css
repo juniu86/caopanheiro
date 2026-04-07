@@ -426,6 +426,75 @@
 }
 
 /* ============================================================
+   WEATHER (Commit C)
+   ============================================================ */
+
+/* Default room__weather layer is invisible until a weather class
+   is applied to the room. */
+.room__weather {
+  background-repeat: repeat;
+  background-size: 24px 24px;
+}
+
+/* ----- Sunny: dust motes drift through a sunbeam ----- */
+.room--sunny .room__foreground::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: 30%;
+  width: 30%;
+  height: 60%;
+  background: linear-gradient(135deg,
+    rgba(255, 230, 109, 0.18) 0%,
+    rgba(255, 230, 109, 0) 70%);
+  pointer-events: none;
+  transform: skewX(-12deg);
+}
+
+/* ----- Cloudy: desaturate the sky and brighten clouds ----- */
+.room--cloudy .room__decor-static .room__window-cloud { opacity: 1; }
+.room--cloudy .room__decor-static .room__window-sun { opacity: 0.3; }
+
+/* ----- Rainy: animated rain pattern + window blur ----- */
+.room--rainy .room__weather {
+  background-image:
+    linear-gradient(180deg,
+      rgba(116, 192, 252, 0)   0%,
+      rgba(116, 192, 252, 0.6) 50%,
+      rgba(116, 192, 252, 0)   100%);
+  background-size: 2px 14px;
+  animation: rain-fall 0.7s linear infinite;
+}
+
+.room--rainy .room__decor-static .room__window-svg {
+  filter: blur(0.4px) brightness(0.85);
+}
+
+@keyframes rain-fall {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 14px; }
+}
+
+/* ----- Snowy: drifting snow particles ----- */
+.room--snowy .room__weather {
+  background-image:
+    radial-gradient(circle at 20% 20%, white 1px, transparent 2px),
+    radial-gradient(circle at 70% 50%, white 1.2px, transparent 2px),
+    radial-gradient(circle at 40% 80%, white 1px, transparent 2px);
+  background-size: 60px 60px, 80px 80px, 70px 70px;
+  animation: snow-fall 8s linear infinite;
+}
+
+.room--snowy .room__decor-static .room__window-svg {
+  filter: brightness(1.05) contrast(0.95);
+}
+
+@keyframes snow-fall {
+  0%   { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 10px 60px, -15px 80px, 5px 70px; }
+}
+
+/* ============================================================
    REDUCED MOTION
    ============================================================ */
 
@@ -438,7 +507,9 @@
   .room__window-curtain-r,
   .room__plant-leaves,
   .room__fireplace-smoke,
-  .room__lamp-glow {
+  .room__lamp-glow,
+  .room--rainy .room__weather,
+  .room--snowy .room__weather {
     animation: none !important;
   }
   /* Keep flame and clock hands — they're functional, not decorative */
