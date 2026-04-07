@@ -1,0 +1,181 @@
+/* ============================================================
+   ROOM — layered scaffold for the home screen room scene.
+   Layers stack via z-index inside .home-screen__room (which
+   already has position:relative + overflow:hidden).
+   ============================================================ */
+
+.room__sky,
+.room__wall,
+.room__floor,
+.room__decor-static,
+.room__weather,
+.room__furniture,
+.room__dogs,
+.room__particles,
+.room__foreground {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.room__dogs {
+  /* Dogs need to receive clicks for selection */
+  pointer-events: none;
+}
+
+.room__dogs .dog-in-room {
+  pointer-events: auto;
+}
+
+/* Z-index stack (back → front) */
+.room__sky        { z-index: 0; }
+.room__wall       { z-index: 1; }
+.room__floor      { z-index: 2; }
+.room__decor-static { z-index: 3; }
+.room__weather    { z-index: 4; }
+.room__furniture  { z-index: 5; }
+.room__dogs       { z-index: 6; }
+.room__particles  { z-index: 7; }
+.room__foreground { z-index: 8; }
+
+/* Speech bubble + owner + action scene above everything */
+.home-screen__room #speech-bubble,
+.home-screen__room #owner-sprite { z-index: 9; }
+.home-screen__room #action-scene { z-index: 10; }
+
+/* ----- Furniture layer ----- */
+.room__furniture .room__bed {
+  /* override of the default screens.css positioning so the bed
+     stays inside the new furniture layer */
+  position: absolute;
+  bottom: 1%;
+  left: 3%;
+  width: 130px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+.room__furniture .room__bed svg { width: 100%; height: auto; }
+
+.room__furniture .room__bowl {
+  position: absolute;
+  bottom: 2%;
+  right: 6%;
+  width: 80px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+.room__furniture .room__bowl svg { width: 100%; height: auto; }
+
+/* ----- Poop indicator ----- */
+.room__poop {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  font-size: 1.5rem;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* ============================================================
+   PARTICLES — action burst effects (Commit C will use these).
+   ============================================================ */
+
+.particle {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  font-size: 1.1rem;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.particle--feed,
+.particle--petisco {
+  animation: crumb-fall 1s ease-out forwards;
+}
+
+.particle--play,
+.particle--vet {
+  animation: sparkle-pop 0.8s ease-out forwards;
+}
+
+.particle--carinho {
+  animation: heart-rise 1.2s ease-out forwards;
+  color: #FF6B8A;
+}
+
+.particle--bathe {
+  animation: bubble-rise 1.5s ease-out forwards;
+  color: #74C0FC;
+}
+
+.particle--walk {
+  animation: paw-print 1s ease-out forwards;
+}
+
+.particle--teach {
+  animation: note-rise 1.2s ease-out forwards;
+  color: #A29BFE;
+}
+
+@keyframes crumb-fall {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), 30px) rotate(180deg); opacity: 0; }
+}
+
+@keyframes sparkle-pop {
+  0%   { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+  40%  { transform: translate(var(--dx, 0), -20px) scale(1.4) rotate(180deg); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -40px) scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes heart-rise {
+  0%   { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20%  { transform: translate(var(--dx, 0), -10px) scale(1.1); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -50px) scale(0.8); opacity: 0; }
+}
+
+@keyframes bubble-rise {
+  0%   { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  20%  { transform: translate(var(--dx, 0), -10px) scale(1); opacity: 0.9; }
+  100% { transform: translate(var(--dx, 0), -60px) scale(1.2); opacity: 0; }
+}
+
+@keyframes paw-print {
+  0%   { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -30px); opacity: 0; }
+}
+
+@keyframes note-rise {
+  0%   { transform: translate(0, 0) rotate(-10deg); opacity: 0; }
+  20%  { transform: translate(var(--dx, 0), -15px) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -40px) rotate(10deg); opacity: 0; }
+}
+
+/* ============================================================
+   DAY / NIGHT / DUSK MODIFIERS (Commit B will fully use these)
+   ============================================================ */
+
+.room--night .room__foreground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 20, 80, 0.18);
+  pointer-events: none;
+}
+
+.room--dusk .room__foreground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 140, 80, 0.10);
+  pointer-events: none;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    animation-duration: 0.01s !important;
+  }
+}

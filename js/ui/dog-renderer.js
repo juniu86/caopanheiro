@@ -214,9 +214,22 @@ Game.DogRenderer = (function () {
   // ===== RENDER DOGS IN ROOM =====
   // Distributes dogs evenly across the room (or near bed/bowl when sleeping/eating).
   // Applies a crowd class so CSS can scale sprites down when 3+ dogs are present.
-  function renderDogsInRoom(roomEl) {
-    if (!roomEl || !Game.State) return;
-    var existing = roomEl.querySelectorAll('.dog-in-room');
+  // The container element may be either the room root or the .room__dogs layer
+  // (created by Game.RoomRenderer). The crowd class is always applied to the
+  // home-screen__room ancestor so its descendant selectors continue to match.
+  function renderDogsInRoom(containerEl) {
+    if (!containerEl || !Game.State) return;
+
+    // Resolve the dogs layer (where wrappers get appended) and the room root
+    // (where the crowd class lives).
+    var dogsLayer = containerEl.classList && containerEl.classList.contains('room__dogs')
+      ? containerEl
+      : (containerEl.querySelector && containerEl.querySelector('.room__dogs')) || containerEl;
+    var roomRoot = containerEl.closest
+      ? (containerEl.closest('.home-screen__room') || containerEl)
+      : containerEl;
+
+    var existing = dogsLayer.querySelectorAll('.dog-in-room');
     existing.forEach(function (el) { el.remove(); });
 
     var selectedDog = Game.UI && Game.UI.getSelectedDog ? Game.UI.getSelectedDog() : null;
@@ -224,10 +237,10 @@ Game.DogRenderer = (function () {
 
     var dogs = Game.State.dogs.filter(function (d) { return !d.hasRunAway; });
 
-    // Apply crowd class so CSS can scale sprites for 3+ dogs
-    roomEl.classList.remove('room--crowd-1', 'room--crowd-2', 'room--crowd-3', 'room--crowd-4');
+    // Apply crowd class to the room root (descendants get the scaling)
+    roomRoot.classList.remove('room--crowd-1', 'room--crowd-2', 'room--crowd-3', 'room--crowd-4');
     if (dogs.length > 0) {
-      roomEl.classList.add('room--crowd-' + Math.min(4, dogs.length));
+      roomRoot.classList.add('room--crowd-' + Math.min(4, dogs.length));
     }
 
     var idleDogs = dogs.filter(function (d) {
@@ -263,7 +276,7 @@ Game.DogRenderer = (function () {
       });
       wrapper.style.left = leftPct + '%';
       wrapper.style.bottom = bottomPct + '%';
-      roomEl.appendChild(wrapper);
+      dogsLayer.appendChild(wrapper);
     }
 
     idleDogs.forEach(function (dog, i) {
