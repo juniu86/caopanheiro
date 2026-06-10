@@ -69,7 +69,31 @@ Game.UI = (function () {
       Game.RoomRenderer.mount(roomEl);
     }
 
+    decorateStaticIcons();
     startRenderLoop();
+  }
+
+  // Substitui os emojis estáticos do HTML (nav buttons, moedas do
+  // HUD, botão de moradia) pelos ícones SVG próprios. Os emojis
+  // permanecem no HTML como fallback caso o JS não carregue.
+  function decorateStaticIcons() {
+    if (!Game.Icons) return;
+
+    document.querySelectorAll('.nav-btn[data-nav]').forEach(function (btn) {
+      var iconEl = btn.querySelector('.nav-btn__icon');
+      var navId = btn.getAttribute('data-nav');
+      var svg = Game.Icons.getNavIcon(navId, { size: 22 });
+      if (iconEl && svg) iconEl.innerHTML = svg;
+    });
+
+    document.querySelectorAll('.hud-coin').forEach(function (el) {
+      el.innerHTML = Game.Icons.get('coin', { size: 18, className: 'hud-coin__svg' });
+    });
+
+    var housingBtn = document.querySelector('.top-bar__settings[data-nav="housing"]');
+    if (housingBtn) {
+      housingBtn.innerHTML = Game.Icons.get('home', { size: 20 });
+    }
   }
 
   function startRenderLoop() {
@@ -237,8 +261,10 @@ Game.UI = (function () {
 
     actions.forEach(function (a) {
       var disabledClass = a.canDo ? '' : ' action-btn--disabled';
+      // Ícone SVG próprio; emoji do action system fica como fallback
+      var iconHtml = (Game.Icons && Game.Icons.getActionIcon(a.id, { size: 22 })) || a.action.icon;
       html += '<button class="action-btn' + disabledClass + '" data-action="' + a.id + '">' +
-        '<span class="action-btn__icon">' + a.action.icon + '</span>' +
+        '<span class="action-btn__icon">' + iconHtml + '</span>' +
         '<span class="action-btn__label">' + a.action.label + '</span>' +
       '</button>';
     });
@@ -276,8 +302,12 @@ Game.UI = (function () {
     Game.State.dogs.forEach(function (dog) {
       var breed = Game.Breeds.getById(dog.breedId);
       var activeClass = dog.id === selectedDogId ? ' dog-selector__btn--active' : '';
-      html += '<button class="dog-selector__btn' + activeClass + '" data-dog-id="' + dog.id + '">' +
-        (breed ? breed.emoji : '\uD83D\uDC36') +
+      // Avatar com a imagem real da ra\u00E7a; emoji como fallback de onerror
+      var fallbackEmoji = breed ? breed.emoji : '\uD83D\uDC36';
+      var imgSrc = Game.DogRenderer.getBreedImg(dog.breedId, 'feliz');
+      html += '<button class="dog-selector__btn' + activeClass + '" data-dog-id="' + dog.id + '" title="' + (dog.name || '') + '">' +
+        '<img src="' + imgSrc + '" alt="" draggable="false" ' +
+          'onerror="this.parentNode.textContent=\'' + fallbackEmoji + '\';" />' +
       '</button>';
     });
 

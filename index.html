@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu C&atilde;opanheiro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/layout.css">
@@ -28,7 +31,7 @@
     <div id="screen-title" class="screen title-screen">
       <div class="center-content">
         <div>
-          <div class="title-screen__dog">&#x1F436;</div>
+          <div id="title-dog" class="title-screen__dog">&#x1F436;</div>
           <div class="title-screen__logo">Meu<br>C&atilde;opanheiro</div>
           <div class="title-screen__subtitle">Adote, cuide e ame!</div>
         </div>
@@ -82,7 +85,7 @@
     <div id="screen-home" class="screen home-screen">
       <!-- Top Bar -->
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="top-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="top-coins">0</span></div>
         <div>
           <span id="top-day" class="top-bar__clock">Dia 1</span>
           &middot;
@@ -139,7 +142,7 @@
     <!-- ===== SCREEN: SHOP ===== -->
     <div id="screen-shop" class="screen shop-screen">
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="shop-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="shop-coins">0</span></div>
         <div class="shop-screen__title">Lojinha</div>
         <div></div>
       </div>
@@ -164,7 +167,7 @@
     <!-- ===== SCREEN: INVENTORY ===== -->
     <div id="screen-inventory" class="screen">
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="inv-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="inv-coins">0</span></div>
         <div style="font-weight:700;">Invent&aacute;rio</div>
         <div></div>
       </div>
@@ -208,7 +211,7 @@
     <!-- ===== SCREEN: HOUSING ===== -->
     <div id="screen-housing" class="screen housing-screen">
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="housing-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="housing-coins">0</span></div>
         <div style="font-weight:700;">Moradia</div>
         <div></div>
       </div>
@@ -264,6 +267,7 @@
   <script src="js/systems/minigame-system.js"></script>
 
   <!-- UI -->
+  <script src="js/ui/icons.js"></script>
   <script src="js/ui/svg-dogs.js"></script>
   <script src="js/ui/svg-room.js"></script>
   <script src="js/ui/screen-manager.js"></script>

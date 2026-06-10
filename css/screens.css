@@ -1,20 +1,25 @@
 /* Title Screen */
 .title-screen {
-  background: linear-gradient(135deg, #FF8C42 0%, #FFE66D 100%);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 244, 230, 0.35) 0%, transparent 55%),
+    linear-gradient(160deg, #C87941 0%, #E8995C 45%, #F4A261 100%);
   text-align: center;
 }
 
 .title-screen__logo {
+  font-family: var(--font-display);
   font-size: var(--font-size-title);
-  font-weight: 900;
+  font-weight: 700;
   color: var(--text-white);
-  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
-  line-height: 1.1;
+  text-shadow: 0 3px 0 rgba(78, 45, 20, 0.30);
+  line-height: 1.08;
+  letter-spacing: 0.5px;
 }
 
 .title-screen__subtitle {
+  font-family: var(--font-display);
   font-size: var(--font-size-lg);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 253, 248, 0.92);
   margin-top: var(--space-sm);
 }
 
@@ -22,6 +27,19 @@
   font-size: 6rem;
   margin: var(--space-lg) 0;
   animation: wag-tail 0.6s ease-in-out infinite alternate;
+}
+
+/* Logo SVG próprio (injetado pelo boot quando Game.SvgDogs existe) */
+.title-screen__dog--svg {
+  font-size: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.title-screen__dog--svg svg {
+  width: 170px;
+  height: 150px;
+  filter: drop-shadow(0 8px 14px rgba(78, 45, 20, 0.30));
 }
 
 .title-screen__buttons {
@@ -32,11 +50,23 @@
 }
 
 .title-screen .btn {
-  min-width: 200px;
+  min-width: 210px;
   background: var(--text-white);
-  color: var(--color-primary);
+  color: var(--color-primary-dark);
   font-size: var(--font-size-lg);
   box-shadow: var(--shadow-md);
+  border-bottom: 3px solid rgba(78, 45, 20, 0.22);
+}
+
+/* Display typography nos títulos de todas as telas */
+.name-screen__title,
+.shelter-screen__title,
+.shop-screen__title,
+.achievements-screen__title,
+.housing-screen__name,
+.breed-detail__name,
+.name-dog-screen__breed-name {
+  font-family: var(--font-display);
 }
 
 /* Name Input Screen */
@@ -244,21 +274,21 @@
   100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
 }
 
-/* Room backgrounds */
+/* Room backgrounds — variações quentes e dessaturadas por tier */
 .room--apt-small {
-  background: linear-gradient(180deg, #FFF8E1 0%, #FFE0B2 100%);
+  background: linear-gradient(180deg, #F7EBDB 0%, #EDDCC6 100%);
 }
 
 .room--apt-large {
-  background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 100%);
+  background: linear-gradient(180deg, #FBEEDC 0%, #F2DCBE 100%);
 }
 
 .room--house-small {
-  background: linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 100%);
+  background: linear-gradient(180deg, #EFF0E0 0%, #DDE3CC 100%);
 }
 
 .room--house-large {
-  background: linear-gradient(180deg, #F3E5F5 0%, #E1BEE7 100%);
+  background: linear-gradient(180deg, #F7E6D6 0%, #EBD2B8 100%);
 }
 
 /* Room furniture */

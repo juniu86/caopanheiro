@@ -56,6 +56,16 @@ var Game = Game || {};
   function showTitleScreen() {
     Game.ScreenManager.show('screen-title');
 
+    // Logo próprio: substitui o emoji pelo cachorro SVG do jogo
+    var titleDog = document.getElementById('title-dog');
+    if (titleDog && Game.SvgDogs && Game.SvgDogs.generate) {
+      var dogSvg = Game.SvgDogs.generate('caramelo', { mood: 'happy' });
+      if (dogSvg) {
+        titleDog.innerHTML = dogSvg;
+        titleDog.classList.add('title-screen__dog--svg');
+      }
+    }
+
     var newGameBtn = document.getElementById('new-game-btn');
     var continueBtn = document.getElementById('continue-btn');
 

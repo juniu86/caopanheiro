@@ -1,34 +1,43 @@
 :root {
-  /* Colors */
-  --color-primary: #FF8C42;
-  --color-primary-dark: #E67A30;
-  --color-secondary: #4ECDC4;
-  --color-secondary-dark: #3DBDB4;
-  --color-accent: #FFE66D;
-  --color-danger: #FF6B6B;
-  --color-success: #51CF66;
-  --color-warning: #FFA94D;
-  --color-info: #74C0FC;
+  /* ==========================================================
+     MEU CÃOPANHEIRO — DESIGN TOKENS
+     Direção: cozy 2D pet-care sim brasileiro.
+     Paleta quente, dessaturada, aconchegante.
+     Os NOMES das variáveis são estáveis — outros arquivos
+     dependem deles. Ajuste valores, não nomes.
+     ========================================================== */
+
+  /* Colors — brand */
+  --color-primary: #C87941;        /* caramelo principal */
+  --color-primary-dark: #A65F2E;
+  --color-primary-soft: #E8B88A;
+  --color-secondary: #2A6F73;      /* azul-petróleo suave */
+  --color-secondary-dark: #1F5559;
+  --color-accent: #F4A261;         /* laranja suave */
+  --color-danger: #C75146;         /* vermelho terroso */
+  --color-success: #8AB17D;        /* verde sálvia */
+  --color-warning: #E2984A;
+  --color-info: #6E9EC4;
 
   /* Backgrounds */
-  --bg-main: #FFF8F0;
-  --bg-card: #FFFFFF;
-  --bg-dark: #2D3436;
-  --bg-overlay: rgba(0, 0, 0, 0.5);
+  --bg-main: #FFF4E6;              /* creme de fundo */
+  --bg-card: #FFFDF8;              /* branco card */
+  --bg-dark: #3A2A1F;
+  --bg-overlay: rgba(58, 42, 31, 0.55);
 
   /* Text */
-  --text-primary: #2D3436;
-  --text-secondary: #636E72;
-  --text-light: #B2BEC3;
-  --text-white: #FFFFFF;
+  --text-primary: #3A2A1F;         /* marrom texto */
+  --text-secondary: #7A6A5A;
+  --text-light: #B0A294;
+  --text-white: #FFFDF8;
 
-  /* Stat bar colors */
-  --stat-hunger: #FF6B6B;
-  --stat-happiness: #FFE66D;
-  --stat-energy: #74C0FC;
-  --stat-hygiene: #51CF66;
-  --stat-health: #FF8C42;
-  --stat-learning: #A29BFE;
+  /* Stat bar colors (dessaturadas, mantêm leitura funcional) */
+  --stat-hunger: #D9705F;
+  --stat-happiness: #E9C46A;
+  --stat-energy: #7FA9C4;
+  --stat-hygiene: #8AB17D;
+  --stat-health: #C87941;
+  --stat-learning: #9B8EC4;
 
   /* Spacing */
   --space-xs: 4px;
@@ -39,13 +48,14 @@
   --space-xxl: 48px;
 
   /* Border radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
   --radius-round: 50%;
 
-  /* Font */
-  --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  /* Typography */
+  --font-family: 'Nunito Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Fredoka', 'Baloo 2', 'Nunito Sans', 'Segoe UI', sans-serif;
   --font-size-sm: 0.85rem;
   --font-size-md: 1rem;
   --font-size-lg: 1.25rem;
@@ -53,13 +63,29 @@
   --font-size-xxl: 2rem;
   --font-size-title: 3rem;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  /* Shadows — quentes, nunca cinza puro */
+  --shadow-sm: 0 2px 6px rgba(78, 45, 20, 0.10);
+  --shadow-md: 0 4px 14px rgba(78, 45, 20, 0.16);
+  --shadow-lg: 0 10px 28px rgba(78, 45, 20, 0.22);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  /* Borders */
+  --border-card: 1px solid rgba(120, 84, 50, 0.12);
 
   /* Transitions */
   --transition-fast: 0.15s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.45s ease;
+}
+
+/* Base typography application */
+body {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+}
+
+h1, h2, h3,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.2px;
 }

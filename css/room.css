@@ -426,6 +426,25 @@
 }
 
 /* ============================================================
+   ACONCHEGO — vinheta quente + rodapé de parede
+   ============================================================ */
+
+.home-screen__room .room__foreground {
+  box-shadow: inset 0 0 56px rgba(78, 45, 20, 0.12);
+}
+
+.room__floor::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 0;
+  right: 0;
+  height: 7px;
+  background: #F5EBDD;
+  border-top: 1px solid rgba(120, 84, 50, 0.18);
+}
+
+/* ============================================================
    TROPHIES (Commit D)
    ============================================================ */
 
