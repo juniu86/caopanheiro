@@ -370,7 +370,7 @@
 .stats-panel {
   padding: 4px var(--space-md) 2px;
   background: var(--bg-card);
-  border-top: 1px solid #EEE;
+  border-top: var(--border-card);
   flex-shrink: 0;
 }
 
@@ -469,7 +469,7 @@
 
 /* Away summary screen */
 .away-screen {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, #1F5559 50%, var(--color-primary-dark) 100%);
   color: var(--text-white);
 }
 

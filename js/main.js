@@ -124,6 +124,16 @@ var Game = Game || {};
 
   // Navigation buttons
   function setupNavigation() {
+    // Map nav id → screen id
+    var NAV_MAP = {
+      home: 'screen-home',
+      shelter: 'screen-shelter',
+      shop: 'screen-shop',
+      inventory: 'screen-inventory',
+      achievements: 'screen-achievements',
+      housing: 'screen-housing'
+    };
+
     document.addEventListener('click', function (e) {
       var navBtn = e.target.closest('[data-nav]');
       if (!navBtn) return;
@@ -158,6 +168,14 @@ var Game = Game || {};
           Game.UI.renderHousing();
           break;
       }
+
+      updateNavActive(screen);
+    });
+  }
+
+  function updateNavActive(activeNavId) {
+    document.querySelectorAll('.nav-btn[data-nav]').forEach(function (btn) {
+      btn.classList.toggle('nav-btn--active', btn.getAttribute('data-nav') === activeNavId);
     });
   }
 

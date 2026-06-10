@@ -484,12 +484,12 @@ Game.UI = (function () {
       var ownedBadge = owned > 0 ? ' (' + owned + 'x)' : '';
 
       html += '<div class="shop-item">' +
-        '<span style="font-size:2rem;">' + item.icon + '</span>' +
+        '<span class="shop-item__emoji">' + item.icon + '</span>' +
         '<div class="shop-item__info">' +
           '<div class="shop-item__name">' + item.name + ownedBadge + '</div>' +
           '<div class="shop-item__desc">' + item.description + '</div>' +
         '</div>' +
-        '<button class="btn btn--primary' + (canBuy ? '' : ' btn--disabled') + '" data-item-id="' + item.id + '" style="padding:6px 12px;font-size:0.85rem;">' +
+        '<button class="btn btn--primary shop-item__action' + (canBuy ? '' : ' btn--disabled') + '" data-item-id="' + item.id + '">' +
           '\uD83D\uDC3E ' + item.price +
         '</button>' +
       '</div>';
@@ -554,12 +554,12 @@ Game.UI = (function () {
       if (!item) return;
 
       html += '<div class="shop-item">' +
-        '<span style="font-size:2rem;">' + item.icon + '</span>' +
+        '<span class="shop-item__emoji">' + item.icon + '</span>' +
         '<div class="shop-item__info">' +
           '<div class="shop-item__name">' + item.name + ' (' + inv.quantity + 'x)</div>' +
           '<div class="shop-item__desc">' + item.description + '</div>' +
         '</div>' +
-        '<button class="btn btn--secondary" data-use-item="' + item.id + '" style="padding:6px 12px;font-size:0.85rem;">' +
+        '<button class="btn btn--secondary shop-item__action" data-use-item="' + item.id + '">' +
           'Usar' +
         '</button>' +
       '</div>';

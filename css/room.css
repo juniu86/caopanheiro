@@ -209,8 +209,8 @@
 }
 
 .room__window-sun {
-  fill: #FFE66D;
-  filter: drop-shadow(0 0 4px #FFB037);
+  fill: var(--color-accent, #F4A261);
+  filter: drop-shadow(0 0 4px rgba(244, 162, 97, 0.6));
   transition: cx 2s linear, cy 2s linear, opacity 1s ease;
 }
 
