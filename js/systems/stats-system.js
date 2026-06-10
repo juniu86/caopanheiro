@@ -27,6 +27,16 @@ Game.StatsSystem = (function () {
         Game.EventBus.emit('stat:critical', { dogId: dog.id, stat: stat, value: stats[stat] });
       }
     });
+
+    // Auto-sleep when energy hits 0 (dog collapses from exhaustion)
+    if (stats.energy <= 0 && !dog.isAsleep) {
+      dog.isAsleep = true;
+      Game.EventBus.emit('dog:sleep', { dogId: dog.id });
+      Game.EventBus.emit('notification', {
+        text: dog.name + ' desmaiou de cansa\u00e7o!',
+        type: 'warning'
+      });
+    }
   }
 
   function checkPoopRandom(dog) {

@@ -1,20 +1,25 @@
 /* Title Screen */
 .title-screen {
-  background: linear-gradient(135deg, #FF8C42 0%, #FFE66D 100%);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 244, 230, 0.35) 0%, transparent 55%),
+    linear-gradient(160deg, #C87941 0%, #E8995C 45%, #F4A261 100%);
   text-align: center;
 }
 
 .title-screen__logo {
+  font-family: var(--font-display);
   font-size: var(--font-size-title);
-  font-weight: 900;
+  font-weight: 700;
   color: var(--text-white);
-  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
-  line-height: 1.1;
+  text-shadow: 0 3px 0 rgba(78, 45, 20, 0.30);
+  line-height: 1.08;
+  letter-spacing: 0.5px;
 }
 
 .title-screen__subtitle {
+  font-family: var(--font-display);
   font-size: var(--font-size-lg);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 253, 248, 0.92);
   margin-top: var(--space-sm);
 }
 
@@ -22,6 +27,19 @@
   font-size: 6rem;
   margin: var(--space-lg) 0;
   animation: wag-tail 0.6s ease-in-out infinite alternate;
+}
+
+/* Logo SVG próprio (injetado pelo boot quando Game.SvgDogs existe) */
+.title-screen__dog--svg {
+  font-size: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.title-screen__dog--svg svg {
+  width: 170px;
+  height: 150px;
+  filter: drop-shadow(0 8px 14px rgba(78, 45, 20, 0.30));
 }
 
 .title-screen__buttons {
@@ -32,11 +50,23 @@
 }
 
 .title-screen .btn {
-  min-width: 200px;
+  min-width: 210px;
   background: var(--text-white);
-  color: var(--color-primary);
+  color: var(--color-primary-dark);
   font-size: var(--font-size-lg);
   box-shadow: var(--shadow-md);
+  border-bottom: 3px solid rgba(78, 45, 20, 0.22);
+}
+
+/* Display typography nos títulos de todas as telas */
+.name-screen__title,
+.shelter-screen__title,
+.shop-screen__title,
+.achievements-screen__title,
+.housing-screen__name,
+.breed-detail__name,
+.name-dog-screen__breed-name {
+  font-family: var(--font-display);
 }
 
 /* Name Input Screen */
@@ -91,8 +121,11 @@
 }
 
 .breed-detail__sprite {
-  font-size: 5rem;
-  margin: var(--space-md) 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-sm) 0;
+  min-height: 80px;
 }
 
 .breed-detail__name {
@@ -145,6 +178,11 @@
   display: flex;
   gap: var(--space-sm);
   margin-top: var(--space-md);
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-card);
+  padding: var(--space-sm) 0;
+  z-index: 1;
 }
 
 .breed-detail__buttons .btn {
@@ -169,30 +207,88 @@
 /* Home Screen */
 .home-screen {
   background: var(--bg-main);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .home-screen__room {
-  flex: 1;
+  flex: 1 1 auto;
   position: relative;
   overflow: hidden;
-  min-height: 200px;
+  min-height: 120px;
+  max-height: 35vh;
 }
 
-/* Room backgrounds */
+/* Action animation overlay */
+.action-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.action-scene--active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.action-scene__text {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.9);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  animation: action-text-pop 0.4s ease;
+  white-space: nowrap;
+}
+
+@keyframes action-text-pop {
+  0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  60% { transform: translateX(-50%) scale(1.1); }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+.action-scene__item {
+  position: absolute;
+  font-size: 2rem;
+  animation: action-item-float 1.5s ease-in-out;
+}
+
+@keyframes action-item-float {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
+}
+
+/* Room backgrounds — variações quentes e dessaturadas por tier */
 .room--apt-small {
-  background: linear-gradient(180deg, #FFF8E1 0%, #FFE0B2 100%);
+  background: linear-gradient(180deg, #F7EBDB 0%, #EDDCC6 100%);
 }
 
 .room--apt-large {
-  background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 100%);
+  background: linear-gradient(180deg, #FBEEDC 0%, #F2DCBE 100%);
 }
 
 .room--house-small {
-  background: linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 100%);
+  background: linear-gradient(180deg, #EFF0E0 0%, #DDE3CC 100%);
 }
 
 .room--house-large {
-  background: linear-gradient(180deg, #F3E5F5 0%, #E1BEE7 100%);
+  background: linear-gradient(180deg, #F7E6D6 0%, #EBD2B8 100%);
 }
 
 /* Room furniture */
@@ -206,38 +302,89 @@
   border-top: 3px solid #A1887F;
 }
 
+/* Per-tier floor patterns */
+.room--apt-large .room__floor {
+  background: repeating-linear-gradient(90deg,
+    #C8A97E 0, #C8A97E 30px, #B89968 30px, #B89968 32px);
+  border-top-color: #8B6914;
+}
+
+.room--house-small .room__floor {
+  background: repeating-linear-gradient(45deg,
+    #E8E0D3 0, #E8E0D3 18px, #D8CDBE 18px, #D8CDBE 20px);
+  border-top-color: #B0A088;
+}
+
+.room--house-large .room__floor {
+  background: repeating-linear-gradient(45deg,
+    #8B6F47 0, #8B6F47 16px, #6F5635 16px, #6F5635 18px);
+  border-top-color: #4E3A22;
+}
+
+/* Legacy decoration rules removed — replaced by detailed SVGs
+   in css/room.css. Kept here for reference of old class names:
+   .room__window, .room__plant, .room__rug, .room__painting,
+   .room__clock, .room__shelf, .room__fireplace, .room__decor-back. */
+
 .room__bowl {
   position: absolute;
-  bottom: 8%;
-  right: 15%;
-  font-size: 1.8rem;
+  bottom: 2%;
+  right: 6%;
+  width: 80px;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+
+.room__bowl svg {
+  width: 100%;
+  height: auto;
 }
 
 .room__bed {
   position: absolute;
-  bottom: 5%;
-  left: 10%;
-  font-size: 2rem;
+  bottom: 1%;
+  left: 3%;
+  width: 130px;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+
+.room__bed svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Dog positioned on bed (sleeping) */
+.dog-in-room--on-bed {
+  z-index: 2;
+  transform-origin: bottom center;
+}
+
+/* Dog positioned at bowl (eating) */
+.dog-in-room--at-bowl {
+  z-index: 2;
+  transform-origin: bottom center;
 }
 
 /* Stat panel on home screen */
 .stats-panel {
-  padding: var(--space-sm) var(--space-md);
+  padding: 4px var(--space-md) 2px;
   background: var(--bg-card);
-  border-top: 1px solid #EEE;
+  border-top: var(--border-card);
+  flex-shrink: 0;
 }
 
 .stats-panel__dog-name {
   font-weight: 700;
-  font-size: var(--font-size-md);
-  margin-bottom: var(--space-xs);
+  font-size: 0.9rem;
+  margin-bottom: 1px;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
 .stats-panel__mood {
-  font-size: var(--font-size-sm);
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
@@ -322,7 +469,7 @@
 
 /* Away summary screen */
 .away-screen {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, #1F5559 50%, var(--color-primary-dark) 100%);
   color: var(--text-white);
 }
 
@@ -352,4 +499,102 @@
 
 .away-screen__event:last-child {
   border-bottom: none;
+}
+
+/* ==========================================================
+   MOBILE RESPONSIVE — SCREENS
+   ========================================================== */
+
+@media (max-height: 667px) {
+  .home-screen__room {
+    min-height: 100px;
+    max-height: 28vh;
+  }
+
+  .stats-panel {
+    padding: 2px var(--space-sm) 1px;
+  }
+
+  .stats-panel__dog-name {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  .stats-panel__mood {
+    font-size: 0.7rem;
+  }
+
+  .breed-detail__sprite {
+    min-height: 60px;
+    margin: var(--space-xs) 0;
+  }
+
+  .breed-detail__name {
+    font-size: var(--font-size-lg);
+  }
+
+  .breed-detail__stats {
+    margin: var(--space-sm) 0;
+  }
+
+  .breed-detail__trick {
+    margin: var(--space-sm) 0;
+    padding: var(--space-xs);
+  }
+
+  .housing-screen__current {
+    padding: var(--space-md);
+  }
+
+  .housing-screen__icon {
+    font-size: 3rem;
+  }
+
+  .housing-screen__next {
+    padding: var(--space-md);
+    margin: var(--space-sm);
+  }
+}
+
+@media (max-height: 568px) {
+  .home-screen__room {
+    min-height: 80px;
+    max-height: 22vh;
+  }
+
+  .breed-detail__sprite {
+    min-height: 50px;
+  }
+
+  .breed-detail__personality {
+    margin: 1px 0;
+  }
+
+  .breed-detail__difficulty {
+    margin: var(--space-xs) 0;
+    padding: 1px var(--space-xs);
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .shelter-screen__header {
+    padding: var(--space-sm);
+  }
+
+  .shelter-screen__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .shop-screen__header {
+    padding: var(--space-sm);
+  }
+
+  .shop-screen__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .breed-detail {
+    max-width: 280px;
+  }
 }

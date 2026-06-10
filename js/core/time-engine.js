@@ -22,9 +22,7 @@ Game.TimeEngine = (function () {
     minuteCounter++;
     Game.State.gameTime.minute++;
 
-    Game.EventBus.emit('tick', { minute: minuteCounter });
-
-    // Hour tick
+    // Hour tick - check BEFORE emitting tick so display never shows :60
     if (Game.State.gameTime.minute >= Game.Config.GAME_MINUTES_PER_HOUR) {
       Game.State.gameTime.minute = 0;
       Game.State.gameTime.hour++;
@@ -38,6 +36,8 @@ Game.TimeEngine = (function () {
         Game.EventBus.emit('dayTick', { day: Game.State.gameTime.day });
       }
     }
+
+    Game.EventBus.emit('tick', { minute: minuteCounter });
 
     // Auto-save check
     if (minuteCounter % Game.Config.AUTO_SAVE_INTERVAL === 0) {
@@ -96,6 +96,12 @@ Game.TimeEngine = (function () {
     });
     Game.State.dogs = Game.State.dogs.filter(function (d) { return !d.hasRunAway; });
 
+    // Offline random events
+    if (Game.RandomEventsSystem && Game.RandomEventsSystem.processOfflineEvents) {
+      var randomEvents = Game.RandomEventsSystem.processOfflineEvents(gameHoursElapsed);
+      randomEvents.forEach(function (e) { events.push(e); });
+    }
+
     // Advance game time
     var totalMinutes = Math.floor(gameHoursElapsed * 60);
     advanceGameTime(totalMinutes);
@@ -110,19 +116,35 @@ Game.TimeEngine = (function () {
     };
   }
 
+  function isDaytime() {
+    var hour = new Date().getHours(); // real-world clock
+    return hour >= Game.Config.DAY_START_HOUR && hour < Game.Config.DAY_END_HOUR;
+  }
+
+  function getTimeMultiplier(dog) {
+    var day = isDaytime();
+    var tm = Game.Config.TIME_MULTIPLIERS;
+    if (day && !dog.isAsleep) return tm.day_awake;
+    if (day && dog.isAsleep) return tm.day_sleeping;
+    if (!day && !dog.isAsleep) return tm.night_awake;
+    return tm.night_sleeping; // night + sleeping
+  }
+
   function applyHourlyDecay(dog, breed, fraction) {
     var cfg = Game.Config.DECAY_RATES;
     var stats = dog.stats;
+    var timeMult = getTimeMultiplier(dog);
 
     // Skip energy decay if sleeping, give recovery instead
     if (dog.isAsleep) {
-      stats.energy = clampStat(stats.energy + Game.Config.SLEEP_ENERGY_RECOVERY * fraction);
+      var recovery = Game.Config.SLEEP_ENERGY_RECOVERY * fraction * timeMult;
+      stats.energy = clampStat(stats.energy + recovery);
       if (stats.energy >= 90) {
         dog.isAsleep = false;
       }
     } else {
       var energyMult = breed ? (breed.attributes.energy / 5) : 1;
-      stats.energy = clampStat(stats.energy + cfg.energy * energyMult * fraction);
+      stats.energy = clampStat(stats.energy + cfg.energy * energyMult * fraction * timeMult);
     }
 
     var hungerMult = breed ? (breed.attributes.hunger / 5) : 1;
@@ -130,10 +152,10 @@ Game.TimeEngine = (function () {
     var hygieneMult = breed ? (breed.attributes.hygiene / 5) : 1;
     var learningMult = 1;
 
-    stats.hunger = clampStat(stats.hunger + cfg.hunger * hungerMult * fraction);
-    stats.happiness = clampStat(stats.happiness + cfg.happiness * happinessMult * fraction);
-    stats.hygiene = clampStat(stats.hygiene + cfg.hygiene * hygieneMult * fraction);
-    stats.learning = clampStat(stats.learning + cfg.learning * learningMult * fraction);
+    stats.hunger = clampStat(stats.hunger + cfg.hunger * hungerMult * fraction * timeMult);
+    stats.happiness = clampStat(stats.happiness + cfg.happiness * happinessMult * fraction * timeMult);
+    stats.hygiene = clampStat(stats.hygiene + cfg.hygiene * hygieneMult * fraction * timeMult);
+    stats.learning = clampStat(stats.learning + cfg.learning * learningMult * fraction * timeMult);
 
     // Health decays faster if hunger or hygiene are critical
     var healthDecay = cfg.health;
@@ -142,7 +164,7 @@ Game.TimeEngine = (function () {
         stats.hygiene < Game.Config.HEALTH_CRITICAL_THRESHOLD) {
       healthDecay = Game.Config.HEALTH_CRITICAL_DECAY;
     }
-    stats.health = clampStat(stats.health + healthDecay * healthMult * fraction);
+    stats.health = clampStat(stats.health + healthDecay * healthMult * fraction * timeMult);
   }
 
   function checkNeglect(dog) {

@@ -18,6 +18,13 @@ var Game = Game || {};
       Game.SaveManager.setupAutoSave();
       Game.StatsSystem.init();
       Game.RunawaySystem.init();
+      Game.XPSystem.init();
+      Game.ComboSystem.init();
+      Game.RandomEventsSystem.init();
+      Game.WeatherSystem.init();
+      Game.MissionsSystem.init();
+      Game.SpeechSystem.init();
+      Game.TabNotifySystem.init();
 
       // Process offline time
       var offlineData = Game.TimeEngine.processOfflineTime();
@@ -32,6 +39,9 @@ var Game = Game || {};
       Game.ScreenManager.show('screen-home');
       Game.UI.updateHomeScreen();
 
+      // Check streak (shows notification after delay)
+      Game.StreakSystem.init();
+
       // Show offline summary if significant time passed
       if (offlineData && offlineData.realHours >= 0.1) {
         setTimeout(function () {
@@ -45,6 +55,16 @@ var Game = Game || {};
 
   function showTitleScreen() {
     Game.ScreenManager.show('screen-title');
+
+    // Logo próprio: substitui o emoji pelo cachorro SVG do jogo
+    var titleDog = document.getElementById('title-dog');
+    if (titleDog && Game.SvgDogs && Game.SvgDogs.generate) {
+      var dogSvg = Game.SvgDogs.generate('caramelo', { mood: 'happy' });
+      if (dogSvg) {
+        titleDog.innerHTML = dogSvg;
+        titleDog.classList.add('title-screen__dog--svg');
+      }
+    }
 
     var newGameBtn = document.getElementById('new-game-btn');
     var continueBtn = document.getElementById('continue-btn');
@@ -79,6 +99,11 @@ var Game = Game || {};
       Game.SaveManager.setupAutoSave();
       Game.StatsSystem.init();
       Game.RunawaySystem.init();
+      Game.XPSystem.init();
+      Game.ComboSystem.init();
+      Game.RandomEventsSystem.init();
+      Game.WeatherSystem.init();
+      Game.MissionsSystem.init();
       Game.UI.init();
       Game.TimeEngine.start();
 
@@ -99,6 +124,16 @@ var Game = Game || {};
 
   // Navigation buttons
   function setupNavigation() {
+    // Map nav id → screen id
+    var NAV_MAP = {
+      home: 'screen-home',
+      shelter: 'screen-shelter',
+      shop: 'screen-shop',
+      inventory: 'screen-inventory',
+      achievements: 'screen-achievements',
+      housing: 'screen-housing'
+    };
+
     document.addEventListener('click', function (e) {
       var navBtn = e.target.closest('[data-nav]');
       if (!navBtn) return;
@@ -133,6 +168,14 @@ var Game = Game || {};
           Game.UI.renderHousing();
           break;
       }
+
+      updateNavActive(screen);
+    });
+  }
+
+  function updateNavActive(activeNavId) {
+    document.querySelectorAll('.nav-btn[data-nav]').forEach(function (btn) {
+      btn.classList.toggle('nav-btn--active', btn.getAttribute('data-nav') === activeNavId);
     });
   }
 

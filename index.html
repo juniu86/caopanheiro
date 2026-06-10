@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu C&atilde;opanheiro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/layout.css">
@@ -11,6 +14,7 @@
   <link rel="stylesheet" href="css/screens.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/dog-sprites.css">
+  <link rel="stylesheet" href="css/room.css">
 </head>
 <body>
   <div id="game-container">
@@ -27,7 +31,7 @@
     <div id="screen-title" class="screen title-screen">
       <div class="center-content">
         <div>
-          <div class="title-screen__dog">&#x1F436;</div>
+          <div id="title-dog" class="title-screen__dog">&#x1F436;</div>
           <div class="title-screen__logo">Meu<br>C&atilde;opanheiro</div>
           <div class="title-screen__subtitle">Adote, cuide e ame!</div>
         </div>
@@ -81,11 +85,12 @@
     <div id="screen-home" class="screen home-screen">
       <!-- Top Bar -->
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="top-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="top-coins">0</span></div>
         <div>
           <span id="top-day" class="top-bar__clock">Dia 1</span>
           &middot;
           <span id="top-clock" class="top-bar__clock">08:00</span>
+          <span id="top-streak" style="margin-left:4px;font-size:0.8rem;"></span>
         </div>
         <button class="top-bar__settings" data-nav="housing" title="Moradia">&#x1F3E0;</button>
       </div>
@@ -93,18 +98,21 @@
       <!-- Dog Selector (multiple dogs) -->
       <div id="dog-selector" class="dog-selector" style="display:none;"></div>
 
-      <!-- Room -->
+      <!-- Room (rebuilt dynamically by updateRoom) -->
       <div id="game-room" class="home-screen__room room--apt-small">
-        <div class="room__floor"></div>
-        <div class="room__bowl">&#x1F37D;&#xFE0F;</div>
-        <div class="room__bed">&#x1F6CF;&#xFE0F;</div>
       </div>
+
+      <!-- Combo Indicator -->
+      <div id="combo-indicator" class="combo-indicator" style="display:none;"></div>
 
       <!-- Stats Panel -->
       <div id="stats-panel" class="stats-panel"></div>
 
       <!-- Action Bar -->
       <div id="action-bar" class="action-bar"></div>
+
+      <!-- Missions Panel -->
+      <div id="missions-panel" class="missions-panel" style="display:none;"></div>
 
       <!-- Navigation -->
       <div class="nav-buttons">
@@ -134,7 +142,7 @@
     <!-- ===== SCREEN: SHOP ===== -->
     <div id="screen-shop" class="screen shop-screen">
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="shop-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="shop-coins">0</span></div>
         <div class="shop-screen__title">Lojinha</div>
         <div></div>
       </div>
@@ -159,7 +167,7 @@
     <!-- ===== SCREEN: INVENTORY ===== -->
     <div id="screen-inventory" class="screen">
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="inv-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="inv-coins">0</span></div>
         <div style="font-weight:700;">Invent&aacute;rio</div>
         <div></div>
       </div>
@@ -203,7 +211,7 @@
     <!-- ===== SCREEN: HOUSING ===== -->
     <div id="screen-housing" class="screen housing-screen">
       <div class="top-bar">
-        <div class="top-bar__coins">&#x1F43E; <span id="housing-coins">0</span></div>
+        <div class="top-bar__coins"><span class="hud-coin">&#x1F43E;</span> <span id="housing-coins">0</span></div>
         <div style="font-weight:700;">Moradia</div>
         <div></div>
       </div>
@@ -218,6 +226,9 @@
         </button>
       </div>
     </div>
+
+    <!-- Minigame Overlay (global, on top of everything) -->
+    <div id="minigame-overlay" class="minigame-overlay"></div>
 
   </div>
 
@@ -245,12 +256,25 @@
   <script src="js/systems/shop-system.js"></script>
   <script src="js/systems/progression-system.js"></script>
   <script src="js/systems/runaway-system.js"></script>
+  <script src="js/systems/xp-system.js"></script>
+  <script src="js/systems/streak-system.js"></script>
+  <script src="js/systems/combo-system.js"></script>
+  <script src="js/systems/random-events-system.js"></script>
+  <script src="js/systems/weather-system.js"></script>
+  <script src="js/systems/missions-system.js"></script>
+  <script src="js/systems/speech-system.js"></script>
+  <script src="js/systems/tab-notify-system.js"></script>
+  <script src="js/systems/minigame-system.js"></script>
 
   <!-- UI -->
+  <script src="js/ui/icons.js"></script>
+  <script src="js/ui/svg-dogs.js"></script>
+  <script src="js/ui/svg-room.js"></script>
   <script src="js/ui/screen-manager.js"></script>
   <script src="js/ui/modal.js"></script>
   <script src="js/ui/notifications.js"></script>
   <script src="js/ui/dog-renderer.js"></script>
+  <script src="js/ui/room-renderer.js"></script>
   <script src="js/ui/ui-updater.js"></script>
 
   <!-- Audio -->

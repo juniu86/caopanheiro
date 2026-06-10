@@ -1,0 +1,552 @@
+/* ============================================================
+   ROOM — layered scaffold for the home screen room scene.
+   Layers stack via z-index inside .home-screen__room (which
+   already has position:relative + overflow:hidden).
+   ============================================================ */
+
+.room__sky,
+.room__wall,
+.room__floor,
+.room__decor-static,
+.room__weather,
+.room__furniture,
+.room__dogs,
+.room__particles,
+.room__foreground {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.room__dogs {
+  /* Dogs need to receive clicks for selection */
+  pointer-events: none;
+}
+
+.room__dogs .dog-in-room {
+  pointer-events: auto;
+}
+
+/* Z-index stack (back → front) */
+.room__sky        { z-index: 0; }
+.room__wall       { z-index: 1; }
+.room__floor      { z-index: 2; }
+.room__decor-static { z-index: 3; }
+.room__weather    { z-index: 4; }
+.room__furniture  { z-index: 5; }
+.room__dogs       { z-index: 6; }
+.room__particles  { z-index: 7; }
+.room__foreground { z-index: 8; }
+
+/* Speech bubble + owner + action scene above everything */
+.home-screen__room #speech-bubble,
+.home-screen__room #owner-sprite { z-index: 9; }
+.home-screen__room #action-scene { z-index: 10; }
+
+/* ----- Furniture layer ----- */
+.room__furniture .room__bed {
+  /* override of the default screens.css positioning so the bed
+     stays inside the new furniture layer */
+  position: absolute;
+  bottom: 1%;
+  left: 3%;
+  width: 130px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+.room__furniture .room__bed svg { width: 100%; height: auto; }
+
+.room__furniture .room__bowl {
+  position: absolute;
+  bottom: 2%;
+  right: 6%;
+  width: 80px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+.room__furniture .room__bowl svg { width: 100%; height: auto; }
+
+/* ----- Poop indicator ----- */
+.room__poop {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  font-size: 1.5rem;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* ============================================================
+   PARTICLES — action burst effects (Commit C will use these).
+   ============================================================ */
+
+.particle {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  font-size: 1.1rem;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.particle--feed,
+.particle--petisco {
+  animation: crumb-fall 1s ease-out forwards;
+}
+
+.particle--play,
+.particle--vet {
+  animation: sparkle-pop 0.8s ease-out forwards;
+}
+
+.particle--carinho {
+  animation: heart-rise 1.2s ease-out forwards;
+  color: #FF6B8A;
+}
+
+.particle--bathe {
+  animation: bubble-rise 1.5s ease-out forwards;
+  color: #74C0FC;
+}
+
+.particle--walk {
+  animation: paw-print 1s ease-out forwards;
+}
+
+.particle--teach {
+  animation: note-rise 1.2s ease-out forwards;
+  color: #A29BFE;
+}
+
+@keyframes crumb-fall {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), 30px) rotate(180deg); opacity: 0; }
+}
+
+@keyframes sparkle-pop {
+  0%   { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+  40%  { transform: translate(var(--dx, 0), -20px) scale(1.4) rotate(180deg); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -40px) scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes heart-rise {
+  0%   { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20%  { transform: translate(var(--dx, 0), -10px) scale(1.1); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -50px) scale(0.8); opacity: 0; }
+}
+
+@keyframes bubble-rise {
+  0%   { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  20%  { transform: translate(var(--dx, 0), -10px) scale(1); opacity: 0.9; }
+  100% { transform: translate(var(--dx, 0), -60px) scale(1.2); opacity: 0; }
+}
+
+@keyframes paw-print {
+  0%   { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -30px); opacity: 0; }
+}
+
+@keyframes note-rise {
+  0%   { transform: translate(0, 0) rotate(-10deg); opacity: 0; }
+  20%  { transform: translate(var(--dx, 0), -15px) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -40px) rotate(10deg); opacity: 0; }
+}
+
+/* ============================================================
+   DAY / NIGHT / DUSK MODIFIERS (Commit B will fully use these)
+   ============================================================ */
+
+.room--night .room__foreground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 20, 80, 0.18);
+  pointer-events: none;
+}
+
+.room--dusk .room__foreground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 140, 80, 0.10);
+  pointer-events: none;
+}
+
+/* ============================================================
+   DETAILED SVG DECORATIONS (Commit B)
+   ============================================================ */
+
+/* ----- Window ----- */
+.room__decor-static .room__window {
+  position: absolute;
+  top: 8%;
+  right: 14%;
+  width: var(--win-w, 60px);
+  height: var(--win-h, 50px);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  pointer-events: none;
+}
+
+.room__window-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__window-pane {
+  fill: var(--sky-fallback, #87CEEB);
+}
+
+/* The actual sky gradient is applied to the parent .room__window
+   via a background and the SVG pane uses fill: transparent. We
+   layer it differently: set background-image on the parent and
+   make the rect transparent. */
+.room__decor-static .room__window {
+  background-image: var(--sky-gradient, linear-gradient(180deg, #87CEEB 0%, #B5DCEF 60%, #E0F0F8 100%));
+  background-clip: padding-box;
+}
+
+.room__window-pane {
+  fill: transparent;
+}
+
+.room__window-sun {
+  fill: var(--color-accent, #F4A261);
+  filter: drop-shadow(0 0 4px rgba(244, 162, 97, 0.6));
+  transition: cx 2s linear, cy 2s linear, opacity 1s ease;
+}
+
+.room__window-moon {
+  fill: #F5F5DC;
+  filter: drop-shadow(0 0 3px #FFFFFF);
+  transition: cx 2s linear, cy 2s linear, opacity 1s ease;
+}
+
+.room__window-cloud {
+  animation: cloud-drift 60s linear infinite;
+}
+.room__window-cloud:nth-of-type(2) {
+  animation-duration: 80s;
+  animation-direction: reverse;
+}
+
+.room__window-curtain-l {
+  transform-origin: 6px 50px;
+  animation: curtain-flutter 6s ease-in-out infinite;
+}
+.room__window-curtain-r {
+  transform-origin: 94px 50px;
+  animation: curtain-flutter 6s ease-in-out infinite reverse;
+}
+
+@keyframes cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(8px); }
+}
+
+@keyframes curtain-flutter {
+  0%, 100% { transform: skewX(0deg); }
+  50%      { transform: skewX(2deg); }
+}
+
+/* ----- Plant ----- */
+.room__decor-static .room__plant {
+  position: absolute;
+  bottom: 38%;
+  left: 36%;
+  width: 36px;
+  height: 48px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+}
+
+.room__plant-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__plant-leaves {
+  transform-origin: 30px 55px;
+  animation: leaf-sway 4s ease-in-out infinite;
+}
+
+@keyframes leaf-sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50%      { transform: rotate(2deg); }
+}
+
+/* ----- Clock ----- */
+.room__decor-static .room__clock {
+  position: absolute;
+  top: 4%;
+  left: 48%;
+  width: 42px;
+  height: 42px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.room__clock-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__clock-svg .hh {
+  transform-origin: 40px 40px;
+  transform: rotate(var(--hour-deg, 0deg));
+  transition: transform 1s linear;
+}
+
+.room__clock-svg .mh {
+  transform-origin: 40px 40px;
+  transform: rotate(var(--min-deg, 0deg));
+  transition: transform 1s linear;
+}
+
+/* ----- Fireplace ----- */
+.room__decor-static .room__fireplace {
+  position: absolute;
+  bottom: 36%;
+  right: 22%;
+  width: var(--fire-w, 56px);
+  height: 64px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.room__fireplace-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.room__fireplace-flame {
+  transform-origin: 50px 68px;
+  animation: flame-flicker 1.2s ease-in-out infinite;
+}
+
+.room__fireplace-flame path:nth-child(2) {
+  animation: flame-shimmer 0.4s ease-in-out infinite alternate;
+}
+
+.room__fireplace-smoke {
+  animation: smoke-rise 4s linear infinite;
+}
+
+@keyframes flame-flicker {
+  0%, 100% { transform: scaleY(1)   scaleX(1);    }
+  25%      { transform: scaleY(1.1) scaleX(0.96); }
+  50%      { transform: scaleY(0.95) scaleX(1.05);}
+  75%      { transform: scaleY(1.05) scaleX(0.98);}
+}
+
+@keyframes flame-shimmer {
+  0%   { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@keyframes smoke-rise {
+  0%   { transform: translateY(0)    scale(0.5); opacity: 0; }
+  20%  { opacity: 0.6; }
+  100% { transform: translateY(-30px) scale(1.4); opacity: 0; }
+}
+
+/* ----- Lamp ----- */
+.room__decor-static .room__lamp {
+  position: absolute;
+  bottom: 38%;
+  left: 22%;
+  width: 24px;
+  height: 60px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.room__lamp-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.room__lamp-glow {
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.room--night .room__lamp-glow,
+.room--dusk  .room__lamp-glow {
+  opacity: 0.85;
+  animation: lamp-glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes lamp-glow-pulse {
+  0%, 100% { transform: scale(1);    }
+  50%      { transform: scale(1.08); }
+}
+
+/* ----- Shelf ----- */
+.room__decor-static .room__shelf {
+  position: absolute;
+  top: 30%;
+  right: 6%;
+  width: 70px;
+  height: 22px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.room__shelf-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ----- Painting ----- */
+.room__decor-static .room__painting {
+  position: absolute;
+  top: 10%;
+  left: 24%;
+  width: 50px;
+  height: 42px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.room__painting-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ----- Rug ----- */
+.room__decor-static .room__rug {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58%;
+  height: 18px;
+  background: radial-gradient(ellipse, #C44569 0%, #8B3A52 60%, transparent 100%);
+  border-radius: 50%;
+}
+
+/* ============================================================
+   ACONCHEGO — vinheta quente + rodapé de parede
+   ============================================================ */
+
+.home-screen__room .room__foreground {
+  box-shadow: inset 0 0 56px rgba(78, 45, 20, 0.12);
+}
+
+.room__floor::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 0;
+  right: 0;
+  height: 7px;
+  background: #F5EBDD;
+  border-top: 1px solid rgba(120, 84, 50, 0.18);
+}
+
+/* ============================================================
+   TROPHIES (Commit D)
+   ============================================================ */
+
+.room__trophy {
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3));
+}
+
+.room__trophy--cup {
+  animation: trophy-gleam 4s ease-in-out infinite;
+}
+
+@keyframes trophy-gleam {
+  0%, 90%, 100% { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3)); }
+  95%           { filter: drop-shadow(0 0 4px #FFFFCC); }
+}
+
+/* ============================================================
+   WEATHER (Commit C)
+   ============================================================ */
+
+/* Default room__weather layer is invisible until a weather class
+   is applied to the room. */
+.room__weather {
+  background-repeat: repeat;
+  background-size: 24px 24px;
+}
+
+/* ----- Sunny: dust motes drift through a sunbeam ----- */
+.room--sunny .room__foreground::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: 30%;
+  width: 30%;
+  height: 60%;
+  background: linear-gradient(135deg,
+    rgba(255, 230, 109, 0.18) 0%,
+    rgba(255, 230, 109, 0) 70%);
+  pointer-events: none;
+  transform: skewX(-12deg);
+}
+
+/* ----- Cloudy: desaturate the sky and brighten clouds ----- */
+.room--cloudy .room__decor-static .room__window-cloud { opacity: 1; }
+.room--cloudy .room__decor-static .room__window-sun { opacity: 0.3; }
+
+/* ----- Rainy: animated rain pattern + window blur ----- */
+.room--rainy .room__weather {
+  background-image:
+    linear-gradient(180deg,
+      rgba(116, 192, 252, 0)   0%,
+      rgba(116, 192, 252, 0.6) 50%,
+      rgba(116, 192, 252, 0)   100%);
+  background-size: 2px 14px;
+  animation: rain-fall 0.7s linear infinite;
+}
+
+.room--rainy .room__decor-static .room__window-svg {
+  filter: blur(0.4px) brightness(0.85);
+}
+
+@keyframes rain-fall {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 14px; }
+}
+
+/* ----- Snowy: drifting snow particles ----- */
+.room--snowy .room__weather {
+  background-image:
+    radial-gradient(circle at 20% 20%, white 1px, transparent 2px),
+    radial-gradient(circle at 70% 50%, white 1.2px, transparent 2px),
+    radial-gradient(circle at 40% 80%, white 1px, transparent 2px);
+  background-size: 60px 60px, 80px 80px, 70px 70px;
+  animation: snow-fall 8s linear infinite;
+}
+
+.room--snowy .room__decor-static .room__window-svg {
+  filter: brightness(1.05) contrast(0.95);
+}
+
+@keyframes snow-fall {
+  0%   { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 10px 60px, -15px 80px, 5px 70px; }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    animation-duration: 0.01s !important;
+  }
+  .room__window-cloud,
+  .room__window-curtain-l,
+  .room__window-curtain-r,
+  .room__plant-leaves,
+  .room__fireplace-smoke,
+  .room__lamp-glow,
+  .room--rainy .room__weather,
+  .room--snowy .room__weather {
+    animation: none !important;
+  }
+  /* Keep flame and clock hands — they're functional, not decorative */
+}

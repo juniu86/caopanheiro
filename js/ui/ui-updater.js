@@ -14,6 +14,16 @@ Game.UI = (function () {
       if (Game.ScreenManager.getCurrent() === 'screen-home') {
         updateTopBar();
         updateStatsPanel();
+        // Update analog clock hands when housing tier supports it (≥ 2)
+        if (Game.RoomRenderer && Game.Player) {
+          var housing = Game.Player.getCurrentHousing();
+          if (housing && housing.id >= 2) {
+            Game.RoomRenderer.renderClockHands(
+              Game.State.gameTime.hour,
+              Game.State.gameTime.minute
+            );
+          }
+        }
       }
     });
 
@@ -22,10 +32,68 @@ Game.UI = (function () {
     });
 
     Game.EventBus.on('dog:animationEnd', function () {
-      updateRoom();
+      Game.RoomRenderer.renderDynamic();
     });
 
+    Game.EventBus.on('housing:upgraded', function () {
+      Game.RoomRenderer.invalidateAll();
+    });
+
+    Game.EventBus.on('action:performed', function (data) {
+      Game.RoomRenderer.spawnParticles(data && data.actionId);
+    });
+
+    Game.EventBus.on('hourTick', function (data) {
+      Game.RoomRenderer.renderAmbientLights(data.hour);
+      Game.RoomRenderer.renderSky(data.hour, Game.State.weather);
+    });
+
+    Game.EventBus.on('weather:changed', function (data) {
+      Game.RoomRenderer.renderWeatherLayer(data.weather);
+      Game.RoomRenderer.renderSky(Game.State.gameTime.hour, data.weather);
+    });
+
+    Game.EventBus.on('achievement:unlocked', function () {
+      Game.RoomRenderer.renderShelfTrophies();
+    });
+
+    Game.EventBus.on('dog:adopted', function () {
+      // Refresh decor so the painting picks up the new dog portrait
+      var housing = Game.Player && Game.Player.getCurrentHousing();
+      if (housing) Game.RoomRenderer.renderStaticDecor(housing.id);
+    });
+
+    // Mount the layered room scaffold once at init.
+    var roomEl = document.getElementById('game-room');
+    if (roomEl && Game.RoomRenderer) {
+      Game.RoomRenderer.mount(roomEl);
+    }
+
+    decorateStaticIcons();
     startRenderLoop();
+  }
+
+  // Substitui os emojis estáticos do HTML (nav buttons, moedas do
+  // HUD, botão de moradia) pelos ícones SVG próprios. Os emojis
+  // permanecem no HTML como fallback caso o JS não carregue.
+  function decorateStaticIcons() {
+    if (!Game.Icons) return;
+
+    document.querySelectorAll('.nav-btn[data-nav]').forEach(function (btn) {
+      var iconEl = btn.querySelector('.nav-btn__icon');
+      var navId = btn.getAttribute('data-nav');
+      var svg = Game.Icons.getNavIcon(navId, { size: 22 });
+      if (iconEl && svg) iconEl.innerHTML = svg;
+    });
+
+    document.querySelectorAll('.hud-coin').forEach(function (el) {
+      el.innerHTML = Game.Icons.get('coin', { size: 18, className: 'hud-coin__svg' });
+    });
+
+    var housingBtn = document.querySelector('.top-bar__settings[data-nav="housing"]');
+    if (housingBtn) {
+      housingBtn.innerHTML = Game.Icons.get('home', { size: 20 });
+    }
   }
 
   function startRenderLoop() {
@@ -51,43 +119,37 @@ Game.UI = (function () {
     if (shopCoins) shopCoins.textContent = Game.State.player.pataCoins;
     if (invCoins) invCoins.textContent = Game.State.player.pataCoins;
     if (housingCoins) housingCoins.textContent = Game.State.player.pataCoins;
+
+    // Streak indicator
+    var streakEl = document.getElementById('top-streak');
+    if (streakEl && Game.StreakSystem) {
+      var streak = Game.StreakSystem.getStreak();
+      streakEl.textContent = streak > 0 ? '\uD83D\uDD25' + streak : '';
+      streakEl.style.display = streak > 0 ? 'inline' : 'none';
+    }
+
+    // Combo indicator
+    var comboEl = document.getElementById('combo-indicator');
+    if (comboEl && Game.ComboSystem) {
+      if (Game.ComboSystem.isActive()) {
+        var count = Game.ComboSystem.getCount();
+        var mult = Game.ComboSystem.getMultiplier();
+        comboEl.textContent = '\uD83D\uDCA5 Combo x' + count + ' (+' + Math.round(mult * 100) + '%)';
+        comboEl.style.display = 'block';
+      } else {
+        comboEl.style.display = 'none';
+      }
+    }
   }
 
   // ===== HOME SCREEN =====
   function updateHomeScreen() {
     updateTopBar();
-    updateRoom();
+    Game.RoomRenderer.renderDynamic();
     updateStatsPanel();
     updateActionBar();
     updateDogSelector();
-  }
-
-  function updateRoom() {
-    var roomEl = document.getElementById('game-room');
-    if (roomEl) {
-      // Update background class
-      var housing = Game.Player.getCurrentHousing();
-      roomEl.className = 'home-screen__room ' + housing.bgClass;
-
-      // Update room furniture
-      var floorHTML = '<div class="room__floor"></div>';
-      var bowlHTML = '<div class="room__bowl">\uD83C\uDF7D\uFE0F</div>';
-      var bedHTML = '<div class="room__bed">\uD83D\uDECF\uFE0F</div>';
-
-      // Check if poop on floor
-      var poopHTML = '';
-      if (Game.State.dogs.some(function (d) { return d.poopOnFloor; })) {
-        poopHTML = '<div style="position:absolute;bottom:12%;left:50%;font-size:1.5rem;">\uD83D\uDCA9</div>';
-      }
-
-      // Keep only structural elements, re-render dogs
-      var structEls = roomEl.querySelectorAll('.room__floor, .room__bowl, .room__bed');
-      if (structEls.length === 0) {
-        roomEl.innerHTML = floorHTML + bowlHTML + bedHTML + poopHTML;
-      }
-
-      Game.DogRenderer.renderDogsInRoom(roomEl);
-    }
+    updateMissionsPanel();
   }
 
   function getSelectedDog() {
@@ -123,11 +185,22 @@ Game.UI = (function () {
       { key: 'learning', label: 'Aprendizado', icon: '\uD83C\uDFAA' }
     ];
 
+    // XP progress bar
+    var xpHtml = '';
+    if (Game.XPSystem) {
+      var xp = Game.XPSystem.getProgress(dog);
+      xpHtml = '<div class="xp-bar">' +
+        '<span class="xp-bar__label">Nv.' + xp.level + '</span>' +
+        '<div class="xp-bar__track"><div class="xp-bar__fill" style="width:' + xp.percent + '%"></div></div>' +
+        '<span class="xp-bar__text">' + xp.current + '/' + xp.needed + '</span>' +
+      '</div>';
+    }
+
     var html = '<div class="stats-panel__dog-name">' +
       '<span>' + moodEmoji + '</span> ' +
       '<span>' + dog.name + '</span> ' +
       '<span class="stats-panel__mood">(' + moodText + ')</span>' +
-    '</div>';
+    '</div>' + xpHtml;
 
     stats.forEach(function (stat) {
       var value = Math.round(dog.stats[stat.key]);
@@ -142,6 +215,35 @@ Game.UI = (function () {
     });
 
     panel.innerHTML = html;
+  }
+
+  function doAction(dog, actionId) {
+    var result = Game.ActionSystem.performAction(dog, actionId);
+    if (result.success) {
+      Game.EventBus.emit('notification', { text: result.message, type: 'success' });
+      Game.Audio.play(actionId);
+
+      var roomEl = document.getElementById('game-room');
+      if (roomEl) {
+        var dogEl = roomEl.querySelector('.dog-in-room--selected .dog-sprite-png');
+        if (dogEl) {
+          var actionClass = 'action-' + actionId;
+          dogEl.className = dogEl.className.replace(/\bmood-\S+/g, '').trim();
+          dogEl.classList.add(actionClass);
+          setTimeout(function () {
+            dogEl.classList.remove(actionClass);
+            Game.RoomRenderer.renderDynamic();
+          }, 1500);
+        }
+
+        Game.DogRenderer.playActionScene(roomEl, actionId, function () {
+          Game.RoomRenderer.renderDynamic();
+        });
+      }
+    } else {
+      Game.EventBus.emit('notification', { text: result.message, type: 'warning' });
+    }
+    updateHomeScreen();
   }
 
   function updateActionBar() {
@@ -159,8 +261,10 @@ Game.UI = (function () {
 
     actions.forEach(function (a) {
       var disabledClass = a.canDo ? '' : ' action-btn--disabled';
+      // Ícone SVG próprio; emoji do action system fica como fallback
+      var iconHtml = (Game.Icons && Game.Icons.getActionIcon(a.id, { size: 22 })) || a.action.icon;
       html += '<button class="action-btn' + disabledClass + '" data-action="' + a.id + '">' +
-        '<span class="action-btn__icon">' + a.action.icon + '</span>' +
+        '<span class="action-btn__icon">' + iconHtml + '</span>' +
         '<span class="action-btn__label">' + a.action.label + '</span>' +
       '</button>';
     });
@@ -171,14 +275,15 @@ Game.UI = (function () {
     bar.querySelectorAll('.action-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var actionId = btn.getAttribute('data-action');
-        var result = Game.ActionSystem.performAction(dog, actionId);
-        if (result.success) {
-          Game.EventBus.emit('notification', { text: result.message, type: 'success' });
-          Game.Audio.play(actionId);
+
+        // Check if this action has a minigame
+        if (Game.MinigameSystem && Game.MinigameSystem.canPlay(actionId)) {
+          Game.MinigameSystem.startMinigame(actionId, dog, function () {
+            doAction(dog, actionId);
+          });
         } else {
-          Game.EventBus.emit('notification', { text: result.message, type: 'warning' });
+          doAction(dog, actionId);
         }
-        updateHomeScreen();
       });
     });
   }
@@ -197,8 +302,12 @@ Game.UI = (function () {
     Game.State.dogs.forEach(function (dog) {
       var breed = Game.Breeds.getById(dog.breedId);
       var activeClass = dog.id === selectedDogId ? ' dog-selector__btn--active' : '';
-      html += '<button class="dog-selector__btn' + activeClass + '" data-dog-id="' + dog.id + '">' +
-        (breed ? breed.emoji : '\uD83D\uDC36') +
+      // Avatar com a imagem real da ra\u00E7a; emoji como fallback de onerror
+      var fallbackEmoji = breed ? breed.emoji : '\uD83D\uDC36';
+      var imgSrc = Game.DogRenderer.getBreedImg(dog.breedId, 'feliz');
+      html += '<button class="dog-selector__btn' + activeClass + '" data-dog-id="' + dog.id + '" title="' + (dog.name || '') + '">' +
+        '<img src="' + imgSrc + '" alt="" draggable="false" ' +
+          'onerror="this.parentNode.textContent=\'' + fallbackEmoji + '\';" />' +
       '</button>';
     });
 
@@ -219,8 +328,9 @@ Game.UI = (function () {
     var html = '';
     breeds.forEach(function (breed) {
       var diffLabel = Game.Breeds.getDifficultyLabel(breed.difficulty);
+      var preview = Game.DogRenderer.renderBreedPreview(breed.id);
       html += '<div class="breed-card" data-breed-id="' + breed.id + '">' +
-        '<div class="breed-emoji">' + breed.emoji + '</div>' +
+        '<div class="breed-card__preview">' + preview + '</div>' +
         '<div class="breed-card__name">' + breed.name + '</div>' +
         '<div class="breed-card__difficulty">' + diffLabel + '</div>' +
       '</div>';
@@ -293,7 +403,7 @@ Game.UI = (function () {
     var adoptBtnClass = canAdopt ? 'btn btn--primary' : 'btn btn--primary btn--disabled';
 
     var html = '<div class="breed-detail">' +
-      '<div class="breed-detail__sprite">' + breed.emoji + '</div>' +
+      '<div class="breed-detail__sprite">' + Game.DogRenderer.renderBreedPreview(breedId) + '</div>' +
       '<div class="breed-detail__name">' + breed.name + '</div>' +
       '<div class="breed-detail__personality">' + breed.personality + '</div>' +
       '<span class="breed-detail__difficulty ' + diffClass + '">' + diffLabel + '</span>' +
@@ -330,7 +440,7 @@ Game.UI = (function () {
     var nameInput = document.getElementById('dog-name-input');
     var confirmBtn = document.getElementById('confirm-dog-name-btn');
 
-    if (breedPreview) breedPreview.innerHTML = '<div class="breed-emoji" style="font-size:5rem;">' + breed.emoji + '</div>';
+    if (breedPreview) breedPreview.innerHTML = Game.DogRenderer.renderBreedPreview(breedId);
     if (breedNameEl) breedNameEl.textContent = breed.name;
     if (nameInput) nameInput.value = '';
 
@@ -374,12 +484,12 @@ Game.UI = (function () {
       var ownedBadge = owned > 0 ? ' (' + owned + 'x)' : '';
 
       html += '<div class="shop-item">' +
-        '<span style="font-size:2rem;">' + item.icon + '</span>' +
+        '<span class="shop-item__emoji">' + item.icon + '</span>' +
         '<div class="shop-item__info">' +
           '<div class="shop-item__name">' + item.name + ownedBadge + '</div>' +
           '<div class="shop-item__desc">' + item.description + '</div>' +
         '</div>' +
-        '<button class="btn btn--primary' + (canBuy ? '' : ' btn--disabled') + '" data-item-id="' + item.id + '" style="padding:6px 12px;font-size:0.85rem;">' +
+        '<button class="btn btn--primary shop-item__action' + (canBuy ? '' : ' btn--disabled') + '" data-item-id="' + item.id + '">' +
           '\uD83D\uDC3E ' + item.price +
         '</button>' +
       '</div>';
@@ -444,12 +554,12 @@ Game.UI = (function () {
       if (!item) return;
 
       html += '<div class="shop-item">' +
-        '<span style="font-size:2rem;">' + item.icon + '</span>' +
+        '<span class="shop-item__emoji">' + item.icon + '</span>' +
         '<div class="shop-item__info">' +
           '<div class="shop-item__name">' + item.name + ' (' + inv.quantity + 'x)</div>' +
           '<div class="shop-item__desc">' + item.description + '</div>' +
         '</div>' +
-        '<button class="btn btn--secondary" data-use-item="' + item.id + '" style="padding:6px 12px;font-size:0.85rem;">' +
+        '<button class="btn btn--secondary shop-item__action" data-use-item="' + item.id + '">' +
           'Usar' +
         '</button>' +
       '</div>';
@@ -546,6 +656,35 @@ Game.UI = (function () {
     }
   }
 
+  // ===== MISSIONS PANEL =====
+  function updateMissionsPanel() {
+    var panel = document.getElementById('missions-panel');
+    if (!panel || !Game.MissionsSystem) return;
+
+    var missions = Game.MissionsSystem.getMissions();
+    if (missions.length === 0) {
+      panel.innerHTML = '';
+      panel.style.display = 'none';
+      return;
+    }
+
+    panel.style.display = 'block';
+    var html = '<div class="missions-header">\uD83C\uDFAF Miss\u00f5es Di\u00e1rias</div>';
+    missions.forEach(function (m) {
+      var percent = Math.min(100, Math.round((m.progress / m.target) * 100));
+      var doneClass = m.completed ? ' mission--done' : '';
+      html += '<div class="mission-item' + doneClass + '">' +
+        '<span class="mission-item__icon">' + (m.completed ? '\u2705' : m.icon) + '</span>' +
+        '<div class="mission-item__info">' +
+          '<div class="mission-item__desc">' + m.description + '</div>' +
+          '<div class="mission-item__bar"><div class="mission-item__fill" style="width:' + percent + '%"></div></div>' +
+        '</div>' +
+        '<span class="mission-item__reward">' + (m.completed ? '\u2705' : '\uD83D\uDC3E' + m.reward) + '</span>' +
+      '</div>';
+    });
+    panel.innerHTML = html;
+  }
+
   // ===== AWAY SUMMARY =====
   function showAwaySummary(offlineData) {
     if (!offlineData) return;
@@ -554,6 +693,8 @@ Game.UI = (function () {
     offlineData.events.forEach(function (evt) {
       if (evt.type === 'runaway') {
         eventsHTML += '<div class="away-screen__event">\uD83D\uDC36 ' + evt.dogName + ' fugiu!</div>';
+      } else if (evt.type === 'random_event') {
+        eventsHTML += '<div class="away-screen__event">' + evt.text + '</div>';
       }
     });
 
