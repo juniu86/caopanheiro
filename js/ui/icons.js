@@ -108,6 +108,18 @@ Game.Icons = (function () {
       '</g>' +
       '<path d="M5.2 13.6l7.6-2.9 3 5.7c-3.8 2.4-7.7 2.6-11.6 1.2l1-4z"/>',
 
+    // Raio (energia)
+    bolt:
+      '<path d="M13.2 2.5 5.6 13.4h4.9l-1.7 8.1 7.6-10.9h-4.9l1.7-8.1z"/>',
+
+    // Sorriso (felicidade)
+    smile:
+      '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+      '<circle cx="12" cy="12" r="8.6"/>' +
+      '<path d="M8.4 14.2c.9 1.4 2.1 2.1 3.6 2.1s2.7-.7 3.6-2.1"/>' +
+      '</g>' +
+      '<circle cx="9" cy="9.6" r="1.2"/><circle cx="15" cy="9.6" r="1.2"/>',
+
     // Moeda (PataCoins)
     coin:
       '<g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.6"/></g>' +
@@ -131,6 +143,16 @@ Game.Icons = (function () {
     vet: 'cross',
     petisco: 'bone',
     cleanPoop: 'broom'
+  };
+
+  // Mapa stat → ícone
+  var STAT_ICONS = {
+    hunger: 'bowl',
+    happiness: 'smile',
+    energy: 'bolt',
+    hygiene: 'drop',
+    health: 'heart',
+    learning: 'star'
   };
 
   // Mapa navegação → ícone
@@ -163,9 +185,15 @@ Game.Icons = (function () {
     return name ? get(name, opts) : '';
   }
 
+  function getStatIcon(statKey, opts) {
+    var name = STAT_ICONS[statKey];
+    return name ? get(name, opts) : '';
+  }
+
   return {
     get: get,
     getActionIcon: getActionIcon,
-    getNavIcon: getNavIcon
+    getNavIcon: getNavIcon,
+    getStatIcon: getStatIcon
   };
 })();

@@ -297,7 +297,6 @@ Game.DogRenderer = (function () {
 
     return '<div class="dog-sprite-png dog-sprite-png--preview">' +
       '<img src="' + imgSrc + '" alt="" draggable="false" ' +
-        'style="width:90px;height:90px;object-fit:contain;" ' +
         'onload="Game.DogRenderer._onImgLoad(this);" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
       '<div class="dog-sprite-png__fallback" style="display:none;">' + svgFallbackHtml + '</div>' +
