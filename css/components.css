@@ -129,7 +129,20 @@
   font-size: 0.85rem;
   width: 18px;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.stat-bar__icon svg { display: block; }
+
+/* Ícones coloridos pela cor funcional do stat */
+.stat-bar__icon--hunger    { color: var(--stat-hunger); }
+.stat-bar__icon--happiness { color: var(--stat-happiness); }
+.stat-bar__icon--energy    { color: var(--stat-energy); }
+.stat-bar__icon--hygiene   { color: var(--stat-hygiene); }
+.stat-bar__icon--health    { color: var(--stat-health); }
+.stat-bar__icon--learning  { color: var(--stat-learning); }
 
 .stat-bar__track {
   flex: 1;
@@ -334,9 +347,92 @@
 }
 
 /* Shop / inventory inline helpers */
+/* Emoji do item vira detalhe dentro de uma moldura própria do jogo */
 .shop-item__emoji {
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #FFF8EC 0%, #F4E6D2 100%);
+  border: var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-inset), var(--shadow-sm);
+}
+
+/* ===== Badges de conquista ===== */
+.achievement-badge {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-round);
+  background: radial-gradient(circle at 35% 30%, #EFE4D4 0%, #DCCBB4 100%);
+  border: 2px solid rgba(120, 84, 50, 0.18);
+  color: rgba(120, 84, 50, 0.45);
+}
+
+.achievement-badge--unlocked {
+  background: radial-gradient(circle at 35% 30%, #FFE9C2 0%, #F4C261 100%);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(200, 121, 65, 0.15), var(--shadow-sm);
+  color: var(--color-primary-dark);
+}
+
+.achievement-badge__emoji {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.achievement-item__coin {
+  display: inline-flex;
+  vertical-align: middle;
+  color: var(--color-primary);
+}
+
+/* ===== Badge de moradia ===== */
+.housing-badge {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-round);
+  background: radial-gradient(circle at 35% 30%, #FFF3DF 0%, #F0DDC2 100%);
+  border: 3px solid rgba(200, 121, 65, 0.35);
+  box-shadow: var(--shadow-md);
+  color: var(--color-primary);
+}
+
+.housing-badge--tier2,
+.housing-badge--tier3 {
+  border-color: var(--color-primary);
+  background: radial-gradient(circle at 35% 30%, #FFEFD2 0%, #F2CD9A 100%);
+}
+
+.housing-screen__price {
+  margin: 12px 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.housing-screen__max {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--color-primary);
 }
 
 .shop-item__action {
@@ -570,10 +666,18 @@
 }
 
 .missions-header {
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 0.8rem;
   margin-bottom: 4px;
   color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.missions-header__icon {
+  display: inline-flex;
 }
 
 .mission-item {

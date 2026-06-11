@@ -161,6 +161,22 @@
   }
 }
 
+/* Mobile: com a casa ocupando 45-55%, os painéis compactam */
+@media (max-width: 767px) {
+  .stats-panel {
+    padding: 3px var(--space-md) 2px;
+  }
+
+  .missions-panel {
+    max-height: 15dvh;
+    overflow-y: auto;
+  }
+
+  .stat-bar__track {
+    height: 8px;
+  }
+}
+
 /* Tablet: container um pouco mais largo, sem aparência de app */
 @media (min-width: 768px) {
   #game-container {
@@ -182,7 +198,7 @@
   }
 
   #game-container {
-    max-width: 1040px;
+    max-width: 1280px;
     height: calc(100vh - 32px);
     margin-top: 16px;
     box-shadow: var(--shadow-lg);
@@ -190,10 +206,10 @@
     border: var(--border-card);
   }
 
-  /* Home screen: grid de duas colunas */
+  /* Home screen: grid 16:9 — casa dominante, painel lateral */
   .home-screen {
     display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+    grid-template-columns: minmax(0, 7fr) minmax(340px, 3fr);
     grid-template-rows: auto auto auto auto auto 1fr auto;
   }
 

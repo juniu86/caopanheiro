@@ -94,6 +94,16 @@ Game.UI = (function () {
     if (housingBtn) {
       housingBtn.innerHTML = Game.Icons.get('home', { size: 20 });
     }
+
+    // Pata grande da tela de nome
+    document.querySelectorAll('.screen-pawmark').forEach(function (el) {
+      el.innerHTML = Game.Icons.get('paw', { size: 64 });
+    });
+
+    // Ícones de título de tela (ex.: Abrigo)
+    document.querySelectorAll('.screen-title-icon[data-icon]').forEach(function (el) {
+      el.innerHTML = Game.Icons.get(el.getAttribute('data-icon'), { size: 22 });
+    });
   }
 
   function startRenderLoop() {
@@ -177,12 +187,12 @@ Game.UI = (function () {
     var moodText = Game.Dog.getMoodText(mood);
 
     var stats = [
-      { key: 'hunger', label: 'Fome', icon: '\uD83C\uDF56' },
-      { key: 'happiness', label: 'Felicidade', icon: '\uD83D\uDE0A' },
-      { key: 'energy', label: 'Energia', icon: '\u26A1' },
-      { key: 'hygiene', label: 'Higiene', icon: '\uD83D\uDEC1' },
-      { key: 'health', label: 'Sa\u00fade', icon: '\u2764\uFE0F' },
-      { key: 'learning', label: 'Aprendizado', icon: '\uD83C\uDFAA' }
+      { key: 'hunger', label: 'Fome', emoji: '\uD83C\uDF56' },
+      { key: 'happiness', label: 'Felicidade', emoji: '\uD83D\uDE0A' },
+      { key: 'energy', label: 'Energia', emoji: '\u26A1' },
+      { key: 'hygiene', label: 'Higiene', emoji: '\uD83D\uDEC1' },
+      { key: 'health', label: 'Sa\u00fade', emoji: '\u2764\uFE0F' },
+      { key: 'learning', label: 'Aprendizado', emoji: '\uD83C\uDFAA' }
     ];
 
     // XP progress bar
@@ -205,8 +215,10 @@ Game.UI = (function () {
     stats.forEach(function (stat) {
       var value = Math.round(dog.stats[stat.key]);
       var criticalClass = value <= 15 ? ' stat-bar__fill--critical' : '';
+      // Ícone SVG próprio colorido pelo stat; emoji só como fallback
+      var iconHtml = (Game.Icons && Game.Icons.getStatIcon(stat.key, { size: 14 })) || stat.emoji;
       html += '<div class="stat-bar">' +
-        '<span class="stat-bar__icon">' + stat.icon + '</span>' +
+        '<span class="stat-bar__icon stat-bar__icon--' + stat.key + '" title="' + stat.label + '">' + iconHtml + '</span>' +
         '<div class="stat-bar__track">' +
           '<div class="stat-bar__fill stat-bar__fill--' + stat.key + criticalClass + '" style="width:' + value + '%"></div>' +
         '</div>' +
@@ -593,13 +605,23 @@ Game.UI = (function () {
     if (!listEl) return;
 
     var html = '';
+    var coinSvg = Game.Icons ? Game.Icons.get('coin', { size: 14 }) : '\uD83D\uDC3E';
+    var trophySvg = Game.Icons ? Game.Icons.get('trophy', { size: 16 }) : '\uD83C\uDFC6';
     Game.Achievements.getAll().forEach(function (ach) {
       var unlocked = Game.Achievements.isUnlocked(ach.id);
       var lockedClass = unlocked ? '' : ' achievement-item--locked';
-      var rewardText = ach.reward > 0 ? '\uD83D\uDC3E ' + ach.reward : '\uD83C\uDFC6';
+      var rewardText = ach.reward > 0
+        ? '<span class="achievement-item__coin">' + coinSvg + '</span> ' + ach.reward
+        : trophySvg;
+      // Badge pr\u00F3pria: medalha SVG com o emoji do achievement como detalhe interno
+      var badgeInner = unlocked
+        ? '<span class="achievement-badge__emoji">' + ach.icon + '</span>'
+        : (Game.Icons ? Game.Icons.get('paw', { size: 18 }) : '\uD83D\uDD12');
 
       html += '<div class="achievement-item' + lockedClass + '">' +
-        '<div class="achievement-item__icon">' + (unlocked ? ach.icon : '\uD83D\uDD12') + '</div>' +
+        '<div class="achievement-item__icon achievement-badge' + (unlocked ? ' achievement-badge--unlocked' : '') + '">' +
+          badgeInner +
+        '</div>' +
         '<div class="achievement-item__info">' +
           '<div class="achievement-item__name">' + ach.name + '</div>' +
           '<div class="achievement-item__desc">' + ach.description + '</div>' +
@@ -619,8 +641,15 @@ Game.UI = (function () {
     var currentEl = document.getElementById('housing-current');
     var nextEl = document.getElementById('housing-next');
 
+    // Badge de moradia: home SVG escalado pelo tier (emoji vira detalhe)
+    function housingBadge(housing) {
+      var homeSvg = Game.Icons ? Game.Icons.get('home', { size: 34 + housing.id * 6 }) : housing.icon;
+      return '<div class="housing-badge housing-badge--tier' + housing.id + '">' + homeSvg + '</div>';
+    }
+    var coinSvgH = Game.Icons ? Game.Icons.get('coin', { size: 16 }) : '\uD83D\uDC3E';
+
     if (currentEl) {
-      currentEl.innerHTML = '<div class="housing-screen__icon">' + current.icon + '</div>' +
+      currentEl.innerHTML = housingBadge(current) +
         '<div class="housing-screen__name">' + current.name + '</div>' +
         '<div class="housing-screen__capacity">' + Game.State.dogs.length + '/' + current.maxDogs + ' cachorros</div>';
     }
@@ -629,10 +658,10 @@ Game.UI = (function () {
       if (next) {
         var canUpgrade = Game.ProgressionSystem.canUpgrade();
         nextEl.innerHTML = '<h3>Pr\u00f3xima Moradia</h3>' +
-          '<div class="housing-screen__icon">' + next.icon + '</div>' +
+          housingBadge(next) +
           '<div class="housing-screen__name">' + next.name + '</div>' +
           '<div class="housing-screen__capacity">At\u00e9 ' + next.maxDogs + ' cachorros</div>' +
-          '<div style="margin:12px 0;font-weight:700;color:var(--color-primary);">\uD83D\uDC3E ' + next.upgradeCost + ' PataCoins</div>' +
+          '<div class="housing-screen__price">' + coinSvgH + ' ' + next.upgradeCost + ' PataCoins</div>' +
           '<button class="btn btn--primary' + (canUpgrade ? '' : ' btn--disabled') + '" id="upgrade-btn">Melhorar!</button>';
 
         setTimeout(function () {
@@ -650,7 +679,8 @@ Game.UI = (function () {
           }
         }, 0);
       } else {
-        nextEl.innerHTML = '<h3>\uD83C\uDFC6 Casa M\u00e1xima!</h3>' +
+        var maxTrophy = Game.Icons ? Game.Icons.get('trophy', { size: 20 }) : '\uD83C\uDFC6';
+        nextEl.innerHTML = '<h3 class="housing-screen__max">' + maxTrophy + ' Casa M\u00e1xima!</h3>' +
           '<p>Voc\u00ea tem a melhor moradia!</p>';
       }
     }
@@ -669,7 +699,8 @@ Game.UI = (function () {
     }
 
     panel.style.display = 'block';
-    var html = '<div class="missions-header">\uD83C\uDFAF Miss\u00f5es Di\u00e1rias</div>';
+    var missionIcon = Game.Icons ? Game.Icons.get('star', { size: 14 }) : '\uD83C\uDFAF';
+    var html = '<div class="missions-header"><span class="missions-header__icon">' + missionIcon + '</span> Miss\u00f5es Di\u00e1rias</div>';
     missions.forEach(function (m) {
       var percent = Math.min(100, Math.round((m.progress / m.target) * 100));
       var doneClass = m.completed ? ' mission--done' : '';

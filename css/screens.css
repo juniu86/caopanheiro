@@ -1,9 +1,45 @@
-/* Title Screen */
+/* Title Screen — capa de jogo: céu quente, sol e colinas */
 .title-screen {
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(255, 244, 230, 0.35) 0%, transparent 55%),
-    linear-gradient(160deg, #C87941 0%, #E8995C 45%, #F4A261 100%);
+    radial-gradient(ellipse at 50% 0%, rgba(255, 244, 230, 0.40) 0%, transparent 55%),
+    linear-gradient(170deg, #E8995C 0%, #F4A261 40%, #F8C68E 75%, #FAE0BC 100%);
   text-align: center;
+  overflow: hidden;
+}
+
+/* Sol ao fundo */
+.title-screen::after {
+  content: "";
+  position: absolute;
+  top: 6%;
+  right: 10%;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF3D6 0%, #FFE2A8 45%, transparent 72%);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* Colinas em camadas na base */
+.title-screen::before {
+  content: "";
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -4%;
+  height: 34%;
+  background:
+    radial-gradient(ellipse 55% 100% at 18% 100%, #8AB17D 0%, rgba(138, 177, 125, 0) 70%),
+    radial-gradient(ellipse 65% 95% at 78% 100%, #9DBE8E 0%, rgba(157, 190, 142, 0) 72%),
+    radial-gradient(ellipse 120% 80% at 50% 115%, #7DA570 0%, rgba(125, 165, 112, 0) 78%);
+  pointer-events: none;
+}
+
+/* Conteúdo acima do cenário */
+.title-screen .center-content {
+  position: relative;
+  z-index: 1;
 }
 
 .title-screen__logo {
@@ -67,6 +103,24 @@
 .breed-detail__name,
 .name-dog-screen__breed-name {
   font-family: var(--font-display);
+}
+
+/* Marcas de tela com ícone próprio */
+.screen-pawmark {
+  font-size: 4rem;
+  color: var(--color-primary);
+  display: flex;
+  justify-content: center;
+}
+
+.screen-pawmark svg {
+  filter: drop-shadow(0 3px 5px rgba(78, 45, 20, 0.20));
+}
+
+.screen-title-icon {
+  display: inline-flex;
+  vertical-align: middle;
+  color: var(--color-primary);
 }
 
 /* Name Input Screen */
@@ -211,12 +265,15 @@
   overflow-x: hidden;
 }
 
+/* A casa é o centro emocional do jogo: 45–55% da altura útil no mobile */
 .home-screen__room {
   flex: 1 1 auto;
   position: relative;
   overflow: hidden;
-  min-height: 120px;
-  max-height: 35vh;
+  min-height: 45vh;
+  min-height: 45dvh;
+  max-height: 54vh;
+  max-height: 54dvh;
 }
 
 /* Action animation overlay */
@@ -507,8 +564,8 @@
 
 @media (max-height: 667px) {
   .home-screen__room {
-    min-height: 100px;
-    max-height: 28vh;
+    min-height: 45dvh;
+    max-height: 50dvh;
   }
 
   .stats-panel {
@@ -558,8 +615,8 @@
 
 @media (max-height: 568px) {
   .home-screen__room {
-    min-height: 80px;
-    max-height: 22vh;
+    min-height: 44dvh;
+    max-height: 48dvh;
   }
 
   .breed-detail__sprite {
