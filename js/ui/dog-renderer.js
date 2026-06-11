@@ -166,17 +166,21 @@ Game.DogRenderer = (function () {
   }
 
   // ===== RENDER DOG SPRITE (main function) =====
+  // SVG is the primary rendering path for all breeds. PNGs are
+  // only used when a verified final asset exists (FINAL_PNG_BREEDS).
+  // The current PNGs are generation plates (RGB, no alpha, checker
+  // backgrounds) and are deliberately NOT loaded.
+  var FINAL_PNG_BREEDS = {};  // Add breed IDs here as final PNGs arrive
+
   function renderDogSprite(dog, options) {
     options = options || {};
     var breed = Game.Breeds.getById(dog.breedId);
     if (!breed) return '';
 
-    var sizeClass = 'dog-sprite-png--' + breed.group;
-    if (breed.group === 'viralata') sizeClass = 'dog-sprite-png--medium';
+    var sizeClass = 'dog-sprite--' + breed.group;
+    if (breed.group === 'viralata') sizeClass = 'dog-sprite--medium';
 
-    // Get PNG mood for image and CSS mood class
     var pngMood = getDogMood(dog);
-    var imgSrc = getBreedImg(dog.breedId, pngMood);
 
     // Map PNG mood to CSS mood class
     var moodClass = '';
@@ -191,22 +195,34 @@ Game.DogRenderer = (function () {
       moodClass = moodMap[pngMood] || 'mood-feliz';
     }
 
-    // Build SVG fallback for onerror
-    var svgFallbackHtml = getSvgFallback(dog.breedId, Game.Dog.getMood(dog));
-    var fallbackEscaped = svgFallbackHtml.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    // Map game mood to SVG mood option
+    var svgMoodMap = {
+      feliz: 'happy', triste: 'sad', dormindo: 'sleeping',
+      com_fome: 'happy', doente: 'very_sad'
+    };
+    var svgMood = svgMoodMap[pngMood] || 'happy';
+    var svgHtml = getSvgFallback(dog.breedId, svgMood);
 
-    // Extras (flies for dirty dogs only — Zzz is now CSS ::after on .mood-dormindo)
     var extras = '';
     if (dog.stats.hygiene < 20 && !dog.isAsleep) {
-      extras += '<span class="dog-flies"><span>\uD83E\uDEB0</span><span>\uD83E\uDEB0</span><span>\uD83E\uDEB0</span></span>';
+      extras += '<span class="dog-flies"><span>🪰</span><span>🪰</span><span>🪰</span></span>';
     }
 
-    return '<div class="dog-sprite-png ' + sizeClass + ' ' + moodClass + '">' +
-      '<img src="' + imgSrc + '" alt="' + (breed.name || '') + '" ' +
-        'draggable="false" ' +
-        'onload="Game.DogRenderer._onImgLoad(this);" ' +
-        'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
-      '<div class="dog-sprite-png__fallback" style="display:none;">' + svgFallbackHtml + '</div>' +
+    // If this breed has verified final PNG assets, load them
+    if (FINAL_PNG_BREEDS[dog.breedId]) {
+      var imgSrc = getBreedImg(dog.breedId, pngMood);
+      return '<div class="dog-sprite dog-sprite-png ' + sizeClass + ' ' + moodClass + '">' +
+        '<img src="' + imgSrc + '" alt="' + (breed.name || '') + '" ' +
+          'draggable="false" ' +
+          'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
+        '<div class="dog-sprite-png__fallback" style="display:none;">' + svgHtml + '</div>' +
+        extras +
+      '</div>';
+    }
+
+    // Primary: SVG sprite directly (no PNG, no canvas hack)
+    return '<div class="dog-sprite dog-sprite-svg ' + sizeClass + ' ' + moodClass + '">' +
+      svgHtml +
       extras +
     '</div>';
   }
@@ -292,14 +308,21 @@ Game.DogRenderer = (function () {
 
   // ===== RENDER BREED PREVIEW (shelter, detail modal, adoption) =====
   function renderBreedPreview(breedId) {
-    var imgSrc = getBreedImg(breedId, 'feliz');
-    var svgFallbackHtml = getSvgFallback(breedId, 'happy');
+    var svgHtml = getSvgFallback(breedId, 'happy');
 
-    return '<div class="dog-sprite-png dog-sprite-png--preview">' +
-      '<img src="' + imgSrc + '" alt="" draggable="false" ' +
-        'onload="Game.DogRenderer._onImgLoad(this);" ' +
-        'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
-      '<div class="dog-sprite-png__fallback" style="display:none;">' + svgFallbackHtml + '</div>' +
+    // Final PNG path (only used if this breed has verified assets)
+    if (FINAL_PNG_BREEDS[breedId]) {
+      var imgSrc = getBreedImg(breedId, 'feliz');
+      return '<div class="dog-sprite-png dog-sprite-png--preview">' +
+        '<img src="' + imgSrc + '" alt="" draggable="false" ' +
+          'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\';" />' +
+        '<div class="dog-sprite-png__fallback" style="display:none;">' + svgHtml + '</div>' +
+      '</div>';
+    }
+
+    // SVG preview (primary path — consistent, no background issues)
+    return '<div class="dog-sprite-svg dog-sprite-svg--preview">' +
+      svgHtml +
     '</div>';
   }
 
